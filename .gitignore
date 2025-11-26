@@ -1,0 +1,25 @@
+﻿# OS and Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node
+node_modules/
+dist/
+build/
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# local env
+.env
+
+# tailwind build
+public/build/
+
+# logs
+*.log

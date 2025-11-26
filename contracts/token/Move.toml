@@ -1,0 +1,17 @@
+[package]
+name = "CedraToken"
+version = "1.0.0"
+authors = ["Cedra Builders"]
+
+[addresses]
+token_addr = "_"
+
+[dev-addresses]
+token_addr = "0xcafe"
+
+[dependencies.CedraFramework]
+git = "https://github.com/cedra-labs/cedra-framework.git"
+rev = "main"
+subdir = "cedra-framework"
+
+[dev-dependencies]

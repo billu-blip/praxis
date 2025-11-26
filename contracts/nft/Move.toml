@@ -1,0 +1,23 @@
+[package]
+name = "CedraNFT"
+version = "1.0.0"
+authors = ["Cedra Builders"]
+
+[addresses]
+nft_addr = "_"
+cedra_token = "0x3"
+
+[dev-addresses]
+nft_addr = "0xcafe"
+
+[dependencies.CedraFramework]
+git = "https://github.com/cedra-labs/cedra-framework.git"
+rev = "main"
+subdir = "cedra-framework"
+
+[dependencies.CedraToken]
+git = "https://github.com/cedra-labs/cedra-framework.git"
+rev = "main"
+subdir = "cedra-token"
+
+[dev-dependencies]

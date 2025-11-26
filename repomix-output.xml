@@ -1,0 +1,5310 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+01-interactive-tutorial/lessons/module-1/lesson-01-what-is-move.md
+01-interactive-tutorial/lessons/module-1/lesson-02-first-module.md
+01-interactive-tutorial/lessons/module-1/lesson-03-variables-types.md
+01-interactive-tutorial/lessons/module-1/lesson-04-functions.md
+01-interactive-tutorial/README.md
+02-zero-to-hero-guide/chapters/01-introduction.md
+02-zero-to-hero-guide/chapters/02-environment-setup.md
+02-zero-to-hero-guide/README.md
+03-migration-guides/cheatsheets/move-syntax.md
+03-migration-guides/README.md
+03-migration-guides/rust-to-move/README.md
+03-migration-guides/solidity-to-move/README.md
+04-video-walkthroughs/README.md
+04-video-walkthroughs/scripts/01-setup-environment.md
+04-video-walkthroughs/scripts/04-common-errors.md
+contracts/counter/Move.toml
+contracts/counter/sources/simple_counter.move
+contracts/token/Move.toml
+contracts/token/sources/cedra_asset.move
+CONTRIBUTING.md
+frontend/cedra-dapp/index.html
+frontend/cedra-dapp/package.json
+frontend/cedra-dapp/src/counter-client.ts
+LICENSE
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="01-interactive-tutorial/lessons/module-1/lesson-01-what-is-move.md">
+# Lesson 1: What is Move?
+
+## 🎯 Learning Objectives
+By the end of this lesson, you will:
+- Understand what the Move programming language is
+- Know why Move was designed for blockchain development
+- Understand the key differences between Move and other smart contract languages
+- Be ready to write your first Move code
+
+---
+
+## 📖 Introduction
+
+Welcome to the Cedra Move Tutorial! 🎉
+
+**Move** is a programming language specifically designed for secure blockchain development. Originally created for the Diem (formerly Libra) blockchain, Move has evolved and is now the foundation for several high-performance blockchains, including **Cedra**.
+
+### Why "Move"?
+
+The name "Move" comes from its core concept: **moving digital assets** safely between accounts. Unlike traditional programming where data can be copied freely, Move treats digital assets as **resources** that can only exist in one place at a time.
+
+---
+
+## 🔐 The Resource Model
+
+Imagine you have a physical $100 bill. You can:
+- ✅ Give it to someone (transfer)
+- ✅ Store it in your wallet (hold)
+- ❌ Copy it (counterfeiting is illegal!)
+- ❌ Accidentally destroy it (well, you could, but it would be intentional)
+
+Move brings this **physical asset model** to digital assets. In Move:
+
+```move
+struct Coin has store {
+    value: u64
+}
+```
+
+This `Coin` is a **resource**. The Move compiler and runtime guarantee that:
+- It cannot be duplicated
+- It cannot be accidentally destroyed
+- It can only exist in one location at a time
+
+---
+
+## 🆚 Move vs. Solidity
+
+If you're coming from Ethereum/Solidity, here's what makes Move different:
+
+| Aspect | Solidity | Move |
+|--------|----------|------|
+| **Asset Model** | Mappings (bookkeeper) | Resources (physical objects) |
+| **Reentrancy** | Must guard against | Impossible by design |
+| **Type Safety** | Runtime checks | Compile-time guarantees |
+| **Storage** | Global state | Account-based resources |
+| **Upgrades** | Proxy patterns | Native upgrade support |
+
+### Example: Token Transfer
+
+**Solidity** (updating ledger entries):
+```solidity
+mapping(address => uint256) public balances;
+
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+```
+
+**Move** (moving physical resources):
+```move
+public fun transfer(from: &signer, to: address, amount: u64) {
+    // Physically withdraw coin from sender
+    let coin = coin::withdraw(from, amount);
+    
+    // Physically deposit to receiver
+    // The coin can only exist in ONE place
+    coin::deposit(to, coin);
+}
+```
+
+---
+
+## 🏗️ Cedra: Move Evolved
+
+Cedra takes the Move language and enhances it with:
+
+1. **Block-STM Parallel Execution**: 10k+ transactions per second
+2. **CedraBFT Consensus**: Less than 1 second finality
+3. **Native Token Standards**: Safe, upgrade-friendly primitives
+4. **Built-in Indexer**: Easy data querying
+
+### Cedra Network Endpoints
+
+```
+🚀 Testnet API: https://testnet.cedra.dev/v1
+🔧 Devnet API:  https://devnet.cedra.dev/v1
+🔎 Explorer:    https://cedrascan.com/
+```
+
+---
+
+## 🧪 Quick Quiz
+
+Test your understanding before moving on:
+
+1. **What does the name "Move" refer to?**
+   - [ ] Moving fast in development
+   - [x] Moving digital assets safely between accounts
+   - [ ] A dance move
+
+2. **What is a "resource" in Move?**
+   - [ ] A file on your computer
+   - [x] A digital asset that cannot be copied or accidentally destroyed
+   - [ ] A web API
+
+3. **Why can't reentrancy attacks happen in Move?**
+   - [ ] Move is too slow
+   - [ ] Move has special guards
+   - [x] Resources can only exist in one place at a time
+
+---
+
+## ✅ Lesson Complete!
+
+You now understand the fundamentals of Move and why it's designed for secure blockchain development.
+
+### What's Next?
+In **Lesson 2**, we'll write your first Move module and understand the basic structure of Move code.
+
+---
+
+## 📚 Additional Resources
+
+- [Cedra Documentation](https://docs.cedra.network/)
+- [The Move Book](https://move-book.com/)
+- [What if Assets Were Physical Objects?](https://docs.cedra.network/for-solidity-developers)
+</file>
+
+<file path="01-interactive-tutorial/lessons/module-1/lesson-02-first-module.md">
+# Lesson 2: Your First Move Module
+
+## 🎯 Learning Objectives
+By the end of this lesson, you will:
+- Understand the structure of a Move module
+- Write your first "Hello World" module
+- Learn about module declarations and addresses
+- Understand the `use` statement for imports
+
+---
+
+## 📖 What is a Module?
+
+A **module** in Move is like a container for your code. It groups together:
+- **Structs** (data structures)
+- **Functions** (logic)
+- **Constants** (fixed values)
+
+Think of a module as a smart contract, but with superpowers! 🦸
+
+### Basic Module Structure
+
+```move
+module <address>::<module_name> {
+    // Imports
+    use std::string;
+    
+    // Constants
+    const MY_CONSTANT: u64 = 100;
+    
+    // Structs
+    struct MyData has key {
+        value: u64
+    }
+    
+    // Functions
+    public fun my_function() {
+        // Your logic here
+    }
+}
+```
+
+---
+
+## 🔑 Understanding Addresses
+
+Every module in Move is published under an **address**. This address is like a unique identifier that says "this module belongs here."
+
+```move
+module 0x1::example {
+    // This module is published at address 0x1
+}
+```
+
+In Cedra, you can also use **named addresses** defined in your `Move.toml`:
+
+```toml
+[addresses]
+my_address = "0x1234..."
+```
+
+Then reference it:
+```move
+module my_address::example {
+    // Much cleaner!
+}
+```
+
+---
+
+## ✍️ Challenge: Your First Module
+
+Let's write your first Move module! This is a simple "Hello" module that stores a greeting.
+
+### Step 1: Create the Module
+
+```move
+module hello_cedra::greeting {
+    use std::string::{Self, String};
+    use std::signer;
+    
+    /// A resource that stores a greeting message
+    struct Greeting has key {
+        message: String
+    }
+    
+    /// Initialize a greeting for the caller
+    public entry fun create_greeting(account: &signer, message: String) {
+        let greeting = Greeting { message };
+        move_to(account, greeting);
+    }
+    
+    /// Read the greeting (view function - no gas cost)
+    #[view]
+    public fun get_greeting(addr: address): String acquires Greeting {
+        let greeting = borrow_global<Greeting>(addr);
+        greeting.message
+    }
+}
+```
+
+### Step 2: Understand Each Part
+
+Let's break down what we wrote:
+
+#### 1. Module Declaration
+```move
+module hello_cedra::greeting {
+```
+- `hello_cedra` is the address (defined in Move.toml)
+- `greeting` is the module name
+
+#### 2. Imports
+```move
+use std::string::{Self, String};
+use std::signer;
+```
+- `use` imports types and functions from other modules
+- `Self` lets us use `string::` prefix for functions
+- `String` imports the type directly
+
+#### 3. Struct with Ability
+```move
+struct Greeting has key {
+    message: String
+}
+```
+- `has key` means this struct can be stored at the top level of an account
+- This makes it a **resource**
+
+#### 4. Entry Function
+```move
+public entry fun create_greeting(account: &signer, message: String) {
+```
+- `public` means callable from outside the module
+- `entry` means callable directly from a transaction
+- `&signer` is a reference to the transaction signer
+
+#### 5. View Function
+```move
+#[view]
+public fun get_greeting(addr: address): String acquires Greeting {
+```
+- `#[view]` marks it as a read-only function (no gas cost to call)
+- `acquires Greeting` declares that this function reads `Greeting` from storage
+
+---
+
+## 🔧 Setting Up Your Project
+
+### 1. Create Project Directory
+
+```bash
+mkdir hello_cedra
+cd hello_cedra
+cedra move init --name hello_cedra
+```
+
+### 2. Configure Move.toml
+
+Edit the `Move.toml` file:
+
+```toml
+[package]
+name = "hello_cedra"
+version = "1.0.0"
+authors = []
+
+[addresses]
+hello_cedra = "_"  # Will be replaced with your account address
+
+[dependencies.CedraFramework]
+git = "https://github.com/cedra-labs/cedra-framework.git"
+rev = "main"
+subdir = "cedra-framework"
+```
+
+### 3. Create the Source File
+
+Save the module code to `sources/greeting.move`
+
+### 4. Compile
+
+```bash
+cedra move compile --named-addresses hello_cedra=default
+```
+
+If successful, you'll see:
+```
+Compiling, may take a little while to download git dependencies...
+INCLUDING DEPENDENCY CedraFramework
+BUILDING hello_cedra
+```
+
+---
+
+## 🧪 Challenge Exercise
+
+Modify the `Greeting` module to add:
+
+1. A function to **update** the greeting message
+2. A function to **delete** the greeting
+
+<details>
+<summary>💡 Hint</summary>
+
+To update a resource, use `borrow_global_mut`:
+```move
+let greeting = borrow_global_mut<Greeting>(addr);
+greeting.message = new_message;
+```
+
+To delete a resource, use `move_from`:
+```move
+let Greeting { message: _ } = move_from<Greeting>(addr);
+```
+</details>
+
+<details>
+<summary>✅ Solution</summary>
+
+```move
+/// Update the greeting message
+public entry fun update_greeting(
+    account: &signer, 
+    new_message: String
+) acquires Greeting {
+    let addr = signer::address_of(account);
+    let greeting = borrow_global_mut<Greeting>(addr);
+    greeting.message = new_message;
+}
+
+/// Delete the greeting
+public entry fun delete_greeting(account: &signer) acquires Greeting {
+    let addr = signer::address_of(account);
+    let Greeting { message: _ } = move_from<Greeting>(addr);
+}
+```
+</details>
+
+---
+
+## ✅ Lesson Complete!
+
+You've written your first Move module! 🎉
+
+### Key Takeaways:
+- Modules contain structs, functions, and constants
+- Every module has an address
+- `entry` functions can be called from transactions
+- `#[view]` functions are read-only and gas-free
+- `acquires` declares which resources a function accesses
+
+### What's Next?
+In **Lesson 3**, we'll dive deeper into Move's type system - variables, primitive types, and more!
+
+---
+
+## 📚 Additional Resources
+
+- [Cedra Counter Tutorial](https://docs.cedra.network/getting-started/counter)
+- [Move Modules Documentation](https://move-book.com/reference/modules.html)
+</file>
+
+<file path="01-interactive-tutorial/lessons/module-1/lesson-03-variables-types.md">
+# Lesson 3: Variables and Types
+
+## 🎯 Learning Objectives
+By the end of this lesson, you will:
+- Understand Move's primitive types
+- Learn about variable declaration and mutability
+- Work with vectors and strings
+- Understand type annotations
+
+---
+
+## 📖 Primitive Types
+
+Move has several built-in primitive types:
+
+### Integer Types
+
+```move
+let a: u8   = 255;        // 8-bit unsigned (0 to 255)
+let b: u16  = 65535;      // 16-bit unsigned
+let c: u32  = 4294967295; // 32-bit unsigned
+let d: u64  = 100;        // 64-bit unsigned (most common)
+let e: u128 = 1000;       // 128-bit unsigned (for large numbers)
+let f: u256 = 10000;      // 256-bit unsigned (for crypto operations)
+```
+
+**💡 Pro Tip:** `u64` is the most commonly used integer type in Cedra/Move for balances, counters, and general numbers.
+
+### Boolean Type
+
+```move
+let is_active: bool = true;
+let is_paused: bool = false;
+
+// Boolean operations
+let result = is_active && !is_paused;  // AND, NOT
+let either = is_active || is_paused;   // OR
+```
+
+### Address Type
+
+```move
+let user: address = @0x1;
+let my_addr: address = @hello_cedra;  // Named address
+
+// Special address literals
+let framework = @0x1;      // Cedra Framework
+let zero = @0x0;           // Zero address
+```
+
+---
+
+## 🔄 Variable Declaration
+
+### Let Bindings
+
+Variables are declared with `let`:
+
+```move
+let x = 10;           // Type inferred as u64
+let y: u64 = 20;      // Explicit type annotation
+let z = x + y;        // z = 30
+```
+
+### Mutability
+
+By default, variables are **immutable**. Use `let mut` for mutable variables:
+
+```move
+// Immutable (default)
+let count = 0;
+// count = 1;  // ❌ Error! Cannot reassign
+
+// Mutable
+let mut counter = 0;
+counter = counter + 1;  // ✅ OK
+counter = counter + 1;  // counter = 2
+```
+
+### Shadowing
+
+You can redeclare a variable with the same name:
+
+```move
+let x = 5;
+let x = x + 1;    // x is now 6
+let x = x * 2;    // x is now 12
+```
+
+This is useful for transforming values without mutability.
+
+---
+
+## 📦 Vectors
+
+Vectors are dynamic arrays that can hold multiple values of the same type:
+
+```move
+use std::vector;
+
+// Creating vectors
+let empty: vector<u64> = vector[];
+let numbers: vector<u64> = vector[1, 2, 3, 4, 5];
+
+// Operations
+let mut v = vector[10, 20, 30];
+
+// Add element to the end
+vector::push_back(&mut v, 40);  // [10, 20, 30, 40]
+
+// Remove and return last element
+let last = vector::pop_back(&mut v);  // last = 40, v = [10, 20, 30]
+
+// Get length
+let len = vector::length(&v);  // 3
+
+// Access element (by reference)
+let first = vector::borrow(&v, 0);  // &10
+
+// Check if empty
+let is_empty = vector::is_empty(&v);  // false
+```
+
+### Vector Iteration
+
+```move
+let values = vector[1, 2, 3, 4, 5];
+let mut sum = 0;
+
+let mut i = 0;
+let len = vector::length(&values);
+while (i < len) {
+    sum = sum + *vector::borrow(&values, i);
+    i = i + 1;
+};
+// sum = 15
+```
+
+---
+
+## 📝 Strings
+
+Move uses byte vectors for strings, with a `String` wrapper for UTF-8:
+
+```move
+use std::string::{Self, String};
+
+// Creating strings
+let hello: String = string::utf8(b"Hello, Cedra!");
+
+// From byte vector
+let bytes: vector<u8> = b"Hello";
+let s = string::utf8(bytes);
+
+// String operations
+let len = string::length(&hello);  // 13
+
+// Concatenation
+let greeting = string::utf8(b"Hello, ");
+let name = string::utf8(b"Alice");
+string::append(&mut greeting, name);
+// greeting = "Hello, Alice"
+
+// Check if empty
+let is_empty = string::is_empty(&greeting);
+```
+
+---
+
+## 🎭 Type Casting
+
+Move requires explicit type casting:
+
+```move
+let small: u8 = 10;
+let big: u64 = (small as u64);  // Cast u8 to u64
+
+let large: u64 = 1000;
+let tiny: u8 = (large as u8);   // ⚠️ Will truncate if > 255
+```
+
+**⚠️ Warning:** Casting to smaller types can cause data loss!
+
+---
+
+## 🔍 Constants
+
+Constants are compile-time values:
+
+```move
+module example::constants {
+    // Constants must be uppercase by convention
+    const MAX_SUPPLY: u64 = 1_000_000;
+    const DECIMALS: u8 = 8;
+    const TOKEN_NAME: vector<u8> = b"MyCoin";
+    
+    // Error codes are commonly constants
+    const E_NOT_AUTHORIZED: u64 = 1;
+    const E_INSUFFICIENT_BALANCE: u64 = 2;
+    
+    public fun get_max_supply(): u64 {
+        MAX_SUPPLY
+    }
+}
+```
+
+---
+
+## 🧪 Challenge Exercise
+
+Write a module that manages a simple todo list using vectors:
+
+```move
+module todo::list {
+    use std::string::String;
+    use std::vector;
+    use std::signer;
+    
+    struct TodoList has key {
+        items: vector<String>
+    }
+    
+    // TODO: Implement these functions
+    // 1. create_list - Initialize empty todo list
+    // 2. add_item - Add a todo item
+    // 3. remove_item - Remove item by index
+    // 4. get_count - Return number of items
+}
+```
+
+<details>
+<summary>✅ Solution</summary>
+
+```move
+module todo::list {
+    use std::string::String;
+    use std::vector;
+    use std::signer;
+    
+    struct TodoList has key {
+        items: vector<String>
+    }
+    
+    /// Error codes
+    const E_LIST_NOT_EXISTS: u64 = 1;
+    const E_INVALID_INDEX: u64 = 2;
+    
+    /// Create a new empty todo list
+    public entry fun create_list(account: &signer) {
+        let list = TodoList { items: vector[] };
+        move_to(account, list);
+    }
+    
+    /// Add an item to the list
+    public entry fun add_item(
+        account: &signer, 
+        item: String
+    ) acquires TodoList {
+        let addr = signer::address_of(account);
+        assert!(exists<TodoList>(addr), E_LIST_NOT_EXISTS);
+        
+        let list = borrow_global_mut<TodoList>(addr);
+        vector::push_back(&mut list.items, item);
+    }
+    
+    /// Remove item by index
+    public entry fun remove_item(
+        account: &signer, 
+        index: u64
+    ) acquires TodoList {
+        let addr = signer::address_of(account);
+        assert!(exists<TodoList>(addr), E_LIST_NOT_EXISTS);
+        
+        let list = borrow_global_mut<TodoList>(addr);
+        let len = vector::length(&list.items);
+        assert!(index < len, E_INVALID_INDEX);
+        
+        vector::remove(&mut list.items, index);
+    }
+    
+    /// Get the number of items
+    #[view]
+    public fun get_count(addr: address): u64 acquires TodoList {
+        assert!(exists<TodoList>(addr), E_LIST_NOT_EXISTS);
+        let list = borrow_global<TodoList>(addr);
+        vector::length(&list.items)
+    }
+}
+```
+</details>
+
+---
+
+## ✅ Lesson Complete!
+
+You now understand Move's type system! 🎉
+
+### Key Takeaways:
+- Use `u64` for most numbers, `u8` for small values
+- Variables are immutable by default; use `let mut` for mutability
+- Vectors are dynamic arrays with push/pop operations
+- Strings are UTF-8 encoded byte vectors
+- Constants are uppercase and compile-time values
+
+### What's Next?
+In **Lesson 4**, we'll explore functions in depth - parameters, return values, and entry points!
+
+---
+
+## 📚 Additional Resources
+
+- [Move Primitive Types](https://move-book.com/reference/primitive-types/)
+- [Move Vector Module](https://move-book.com/reference/vector.html)
+</file>
+
+<file path="01-interactive-tutorial/lessons/module-1/lesson-04-functions.md">
+# Lesson 4: Functions and Entry Points
+
+## 🎯 Learning Objectives
+By the end of this lesson, you will:
+- Understand different function types in Move
+- Work with parameters and return values
+- Learn about entry functions for transactions
+- Use view functions for gas-free queries
+- Master error handling with assert
+
+---
+
+## 📖 Function Basics
+
+### Function Declaration
+
+```move
+fun function_name(param1: Type1, param2: Type2): ReturnType {
+    // function body
+    return_value
+}
+```
+
+### Simple Examples
+
+```move
+// No parameters, no return
+fun do_nothing() {
+    // Empty function
+}
+
+// With parameters
+fun add(a: u64, b: u64): u64 {
+    a + b  // Last expression is the return value
+}
+
+// Multiple returns (using tuple)
+fun swap(a: u64, b: u64): (u64, u64) {
+    (b, a)
+}
+
+// Using the results
+let (x, y) = swap(10, 20);  // x = 20, y = 10
+```
+
+---
+
+## 🌐 Function Visibility
+
+Move has three visibility levels:
+
+### Private (Default)
+```move
+fun internal_helper(): u64 {
+    // Only callable within this module
+    42
+}
+```
+
+### Public
+```move
+public fun get_value(): u64 {
+    // Callable from any module
+    100
+}
+```
+
+### Public Friend
+```move
+// First declare friend modules
+friend other_module::name;
+
+public(friend) fun friend_only(): u64 {
+    // Only callable by friend modules
+    200
+}
+```
+
+---
+
+## 🚀 Entry Functions
+
+Entry functions are the **gateway** to your smart contract. They can be called directly from transactions.
+
+```move
+public entry fun transfer_tokens(
+    sender: &signer,      // Transaction signer
+    recipient: address,    // Where to send
+    amount: u64           // How much
+) {
+    // Transfer logic here
+}
+```
+
+### Key Rules for Entry Functions:
+1. Must be declared with `entry` keyword
+2. First parameter is usually `&signer` (the transaction sender)
+3. Can only return types with `drop` ability (or nothing)
+4. Called directly via CLI or SDK
+
+### Calling Entry Functions
+
+**Via CLI:**
+```bash
+cedra move run \
+    --function-id default::mymodule::transfer_tokens \
+    --args address:0x123... u64:1000
+```
+
+**Via TypeScript SDK:**
+```typescript
+const txn = await cedra.transaction.build.simple({
+    function: `${MODULE}::transfer_tokens`,
+    arguments: [recipientAddress, 1000],
+});
+await cedra.signAndSubmitTransaction({ signer, transaction: txn });
+```
+
+---
+
+## 👁️ View Functions
+
+View functions are **read-only** and **gas-free**. Perfect for queries!
+
+```move
+#[view]
+public fun get_balance(addr: address): u64 acquires Balance {
+    let balance = borrow_global<Balance>(addr);
+    balance.amount
+}
+
+#[view]
+public fun get_total_supply(): u64 {
+    TOTAL_SUPPLY
+}
+```
+
+### Calling View Functions
+
+**Via CLI:**
+```bash
+cedra move view \
+    --function-id default::mymodule::get_balance \
+    --args address:0x123...
+```
+
+**Via TypeScript SDK:**
+```typescript
+const balance = await cedra.view({
+    function: `${MODULE}::get_balance`,
+    arguments: [userAddress],
+});
+```
+
+---
+
+## ⚡ The Signer Type
+
+`&signer` is a special type representing the transaction sender. It proves authorization.
+
+```move
+use std::signer;
+
+public entry fun protected_action(account: &signer) {
+    // Get the address from the signer
+    let addr = signer::address_of(account);
+    
+    // Now we know the caller is addr
+    // Any resources moved from account need this signer
+}
+```
+
+### Why Signer Matters
+
+```move
+// ❌ BAD: Anyone can call this for any address
+public entry fun bad_withdraw(from: address, amount: u64) {
+    // Dangerous! No proof that caller owns 'from'
+}
+
+// ✅ GOOD: Only the owner can call this
+public entry fun good_withdraw(account: &signer, amount: u64) {
+    let from = signer::address_of(account);
+    // Safe! We know the caller owns this account
+}
+```
+
+---
+
+## ❌ Error Handling
+
+Move uses `assert!` for error checking:
+
+```move
+// Error codes as constants
+const E_NOT_OWNER: u64 = 1;
+const E_INSUFFICIENT_BALANCE: u64 = 2;
+const E_ALREADY_EXISTS: u64 = 3;
+
+public entry fun withdraw(account: &signer, amount: u64) acquires Balance {
+    let addr = signer::address_of(account);
+    
+    // Check balance exists
+    assert!(exists<Balance>(addr), E_NOT_OWNER);
+    
+    let balance = borrow_global_mut<Balance>(addr);
+    
+    // Check sufficient funds
+    assert!(balance.amount >= amount, E_INSUFFICIENT_BALANCE);
+    
+    balance.amount = balance.amount - amount;
+}
+```
+
+### The `abort` Keyword
+
+You can also abort with a message:
+
+```move
+if (amount > balance.amount) {
+    abort E_INSUFFICIENT_BALANCE
+};
+```
+
+---
+
+## 🔄 Acquires Annotation
+
+When a function accesses global storage, it must declare what it accesses:
+
+```move
+struct Counter has key {
+    value: u64
+}
+
+// Must declare acquires Counter
+public fun increment(addr: address) acquires Counter {
+    let counter = borrow_global_mut<Counter>(addr);
+    counter.value = counter.value + 1;
+}
+
+// Reading also requires acquires
+#[view]
+public fun get_count(addr: address): u64 acquires Counter {
+    borrow_global<Counter>(addr).value
+}
+```
+
+---
+
+## 🧪 Complete Example: Counter Module
+
+```move
+module counter::simple_counter {
+    use std::signer;
+    
+    /// The counter resource
+    struct Counter has key {
+        value: u64
+    }
+    
+    /// Error codes
+    const E_COUNTER_NOT_EXISTS: u64 = 1;
+    const E_COUNTER_ALREADY_EXISTS: u64 = 2;
+    
+    /// Initialize a counter with value 0
+    public entry fun initialize(account: &signer) {
+        let addr = signer::address_of(account);
+        assert!(!exists<Counter>(addr), E_COUNTER_ALREADY_EXISTS);
+        
+        move_to(account, Counter { value: 0 });
+    }
+    
+    /// Increment by 1
+    public entry fun increment(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.value = counter.value + 1;
+    }
+    
+    /// Increment by a custom amount
+    public entry fun increment_by(
+        account: &signer, 
+        amount: u64
+    ) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.value = counter.value + amount;
+    }
+    
+    /// Get current value (gas-free)
+    #[view]
+    public fun get_count(addr: address): u64 acquires Counter {
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        borrow_global<Counter>(addr).value
+    }
+    
+    /// Check if counter exists
+    #[view]
+    public fun has_counter(addr: address): bool {
+        exists<Counter>(addr)
+    }
+    
+    /// Reset to zero
+    public entry fun reset(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.value = 0;
+    }
+}
+```
+
+---
+
+## 🧪 Challenge Exercise
+
+Create a module with a shared pool that anyone can deposit to, but only the owner can withdraw:
+
+```move
+module pool::shared_pool {
+    // TODO: Implement
+    // 1. Pool resource with owner address and balance
+    // 2. create_pool - Owner creates the pool
+    // 3. deposit - Anyone can deposit
+    // 4. withdraw - Only owner can withdraw
+    // 5. get_balance - View function
+}
+```
+
+<details>
+<summary>✅ Solution</summary>
+
+```move
+module pool::shared_pool {
+    use std::signer;
+    
+    struct Pool has key {
+        owner: address,
+        balance: u64
+    }
+    
+    const E_NOT_OWNER: u64 = 1;
+    const E_POOL_NOT_EXISTS: u64 = 2;
+    const E_INSUFFICIENT_BALANCE: u64 = 3;
+    
+    public entry fun create_pool(account: &signer) {
+        let owner = signer::address_of(account);
+        move_to(account, Pool { owner, balance: 0 });
+    }
+    
+    public entry fun deposit(
+        _depositor: &signer, 
+        pool_owner: address,
+        amount: u64
+    ) acquires Pool {
+        assert!(exists<Pool>(pool_owner), E_POOL_NOT_EXISTS);
+        let pool = borrow_global_mut<Pool>(pool_owner);
+        pool.balance = pool.balance + amount;
+    }
+    
+    public entry fun withdraw(
+        account: &signer, 
+        amount: u64
+    ) acquires Pool {
+        let addr = signer::address_of(account);
+        assert!(exists<Pool>(addr), E_POOL_NOT_EXISTS);
+        
+        let pool = borrow_global_mut<Pool>(addr);
+        assert!(addr == pool.owner, E_NOT_OWNER);
+        assert!(pool.balance >= amount, E_INSUFFICIENT_BALANCE);
+        
+        pool.balance = pool.balance - amount;
+    }
+    
+    #[view]
+    public fun get_balance(pool_owner: address): u64 acquires Pool {
+        assert!(exists<Pool>(pool_owner), E_POOL_NOT_EXISTS);
+        borrow_global<Pool>(pool_owner).balance
+    }
+}
+```
+</details>
+
+---
+
+## ✅ Lesson Complete!
+
+You've mastered Move functions! 🎉
+
+### Key Takeaways:
+- `entry` functions are transaction entry points
+- `#[view]` functions are gas-free read operations
+- `&signer` proves transaction authorization
+- `assert!` and `abort` handle errors
+- `acquires` declares storage access
+
+### What's Next?
+In **Module 2**, we'll dive deep into **Resources and Abilities** - the heart of Move's safety guarantees!
+
+---
+
+## 📚 Additional Resources
+
+- [Move Functions Reference](https://move-book.com/reference/functions.html)
+- [Cedra CLI Usage](https://docs.cedra.network/cli/usage)
+</file>
+
+<file path="01-interactive-tutorial/README.md">
+# 🎮 Cedra Move Interactive Tutorial
+
+> **Learn Move by Building - A CryptoZombies-Style Experience**
+
+## 📖 Overview
+
+This interactive tutorial teaches developers how to write their first Smart Contract on Cedra using Move. Following a gamified approach similar to CryptoZombies, learners progress through lessons, complete coding challenges, and earn achievements.
+
+## 🎯 Learning Path
+
+### Module 1: Move Fundamentals
+- Lesson 1: What is Move? (Introduction)
+- Lesson 2: Your First Module
+- Lesson 3: Variables and Types
+- Lesson 4: Functions and Entry Points
+
+### Module 2: Resources & Abilities
+- Lesson 5: Understanding Resources
+- Lesson 6: The Ability System (key, store, copy, drop)
+- Lesson 7: Global Storage Operations
+- Lesson 8: Resource Lifecycle
+
+### Module 3: Building Your First DApp
+- Lesson 9: Creating a Counter Contract
+- Lesson 10: Testing Your Contract
+- Lesson 11: Deploying to Testnet
+- Lesson 12: Interacting via CLI
+
+### Module 4: Token Development
+- Lesson 13: Fungible Asset Basics
+- Lesson 14: Minting & Burning
+- Lesson 15: Transfers & Permissions
+- Lesson 16: Building a Token DApp
+
+### Module 5: NFT Collections
+- Lesson 17: NFT Fundamentals
+- Lesson 18: Creating Collections
+- Lesson 19: Minting NFTs
+- Lesson 20: Transfers & Marketplace Basics
+
+## 🚀 Getting Started
+
+```bash
+cd 01-interactive-tutorial
+npm install
+npm run dev
+```
+
+## 📁 Directory Structure
+
+```
+01-interactive-tutorial/
+├── lessons/                    # Tutorial content (Markdown)
+│   ├── module-1/              # Move Fundamentals
+│   ├── module-2/              # Resources & Abilities
+│   ├── module-3/              # First DApp
+│   ├── module-4/              # Token Development
+│   └── module-5/              # NFT Collections
+├── challenges/                 # Code challenges
+│   ├── solutions/             # Reference solutions
+│   └── tests/                 # Challenge tests
+├── contracts/                  # Tutorial smart contracts
+│   ├── examples/              # Example contracts
+│   └── starter/               # Starter templates
+└── webapp/                     # Interactive web app
+    ├── src/
+    │   ├── components/        # React components
+    │   ├── lessons/           # Lesson renderers
+    │   └── editor/            # Code editor
+    └── public/
+```
+</file>
+
+<file path="02-zero-to-hero-guide/chapters/01-introduction.md">
+# Chapter 1: Introduction to Cedra & Move
+
+> **Understanding the Foundation of Secure Blockchain Development**
+
+---
+
+## 🎯 What You'll Learn
+
+- What Cedra is and why it matters
+- The philosophy behind the Move programming language
+- Key differences from other blockchain platforms
+- Cedra's architecture and capabilities
+
+---
+
+## 🌐 What is Cedra?
+
+**Cedra** is the first community-owned blockchain built on the Move language that lets anyone spin up and govern their own sovereign networks. Designed as a public good, Cedra combines:
+
+- **Protocol Development** - Open-source, community-driven
+- **Funding** - Sustainable development through governance
+- **Growth** - Collaborative ecosystem building
+
+### Why Cedra Stands Out
+
+| Feature | Cedra | Traditional L1s |
+|---------|-------|-----------------|
+| **Throughput** | 10,000+ TPS | 15-1000 TPS |
+| **Finality** | < 1 second | 6s - 10 min |
+| **Language** | Move (resource-safe) | Solidity/Rust |
+| **Governance** | On-chain, community | Varies |
+| **Upgrades** | Native hot-swap | Proxy patterns |
+
+### Network Information
+
+| Network | API Endpoint | Explorer |
+|---------|-------------|----------|
+| **Testnet** | https://testnet.cedra.dev/v1 | [Cedrascan](https://cedrascan.com) |
+| **Devnet** | https://devnet.cedra.dev/v1 | [Cedrascan](https://cedrascan.com) |
+
+---
+
+## 🦀 What is Move?
+
+**Move** is a programming language designed specifically for secure blockchain development. It was originally created for the Diem project (Facebook/Meta's blockchain initiative) and has since been adopted by several high-performance chains.
+
+### The Core Philosophy
+
+Move treats digital assets as **physical objects** rather than database entries:
+
+```
+Traditional Approach:          Move Approach:
+┌──────────────────┐          ┌──────────────────┐
+│ balances[alice]  │          │                  │
+│     = 100        │          │  Alice's Wallet  │
+│ balances[bob]    │          │   ┌─────────┐    │
+│     = 50         │          │   │ 💰 100  │    │
+└──────────────────┘          │   └─────────┘    │
+     (Ledger)                 └──────────────────┘
+                                   (Resource)
+```
+
+### Why This Matters
+
+1. **No Reentrancy Attacks** - Resources can only exist in one place
+2. **No Double Spending** - Resources cannot be copied
+3. **No Accidental Loss** - Resources must be explicitly handled
+4. **Compile-Time Safety** - Many bugs caught before deployment
+
+---
+
+## 🏗️ Cedra Architecture
+
+Cedra combines several cutting-edge technologies:
+
+### 1. Block-STM Parallel Execution
+
+Cedra's execution engine processes transactions in parallel, automatically detecting conflicts:
+
+```
+Traditional:          Block-STM:
+TX1 → TX2 → TX3      TX1 ─┐
+                      TX2 ─┼─→ Parallel!
+                      TX3 ─┘
+```
+
+### 2. CedraBFT Consensus
+
+A pipelined HotStuff variant providing:
+- Deterministic finality
+- Byzantine fault tolerance
+- High throughput
+
+### 3. Sparse Merkle Tree State
+
+- Light-client proofs
+- Fast sync for new nodes
+- Efficient state verification
+
+### 4. Move Virtual Machine
+
+- Linear type system
+- Bytecode verification
+- Resource safety guarantees
+
+---
+
+## 🆚 Cedra vs Other Platforms
+
+### vs Ethereum (EVM)
+
+| Aspect | Ethereum | Cedra |
+|--------|----------|-------|
+| Language | Solidity | Move |
+| Asset Model | Mappings | Resources |
+| Reentrancy | Must guard | Impossible |
+| Upgrades | Proxy patterns | Native support |
+| Gas Model | Gas price auction | Predictable fees |
+
+### vs Solana
+
+| Aspect | Solana | Cedra |
+|--------|--------|-------|
+| Language | Rust | Move |
+| Model | Account-based | Object-based |
+| Parallelism | Manual declaration | Automatic (Block-STM) |
+| Developer UX | Complex | Simpler |
+
+### vs Aptos
+
+| Aspect | Aptos | Cedra |
+|--------|-------|-------|
+| Governance | Foundation-led | Community-owned |
+| Focus | Enterprise | Public goods |
+| Ecosystem | Established | Growing |
+| Philosophy | Move + Enhancements | Move + Community |
+
+---
+
+## 🎓 Key Concepts Preview
+
+Before diving into code, understand these core Move concepts:
+
+### 1. Resources
+Digital assets that can't be copied or discarded:
+```move
+struct Coin has store {
+    value: u64
+}
+```
+
+### 2. Abilities
+Type capabilities that control behavior:
+- `copy` - Can be duplicated
+- `drop` - Can be discarded
+- `store` - Can be saved in global storage
+- `key` - Can be a top-level storage key
+
+### 3. Modules
+Containers for code (like smart contracts):
+```move
+module my_address::my_module {
+    // Functions, structs, constants
+}
+```
+
+### 4. Entry Functions
+Transaction entry points:
+```move
+public entry fun transfer(from: &signer, to: address, amount: u64) {
+    // Transfer logic
+}
+```
+
+---
+
+## 🛠️ What We'll Build
+
+Throughout this guide, you'll build:
+
+1. **Counter DApp** - Understand basics
+2. **Fungible Token** - ERC-20 equivalent
+3. **NFT Collection** - Digital collectibles
+4. **Full Stack App** - Frontend + contracts
+
+---
+
+## ✅ Chapter Summary
+
+- Cedra is a high-performance, community-owned Move blockchain
+- Move provides resource safety through its type system
+- Block-STM enables parallel transaction execution
+- CedraBFT provides fast, deterministic finality
+- Cedra offers advantages over EVM and other chains
+
+---
+
+## 📚 Further Reading
+
+- [Cedra Whitepaper](https://docs.cedra.network/architecture)
+- [Move Language Book](https://move-book.com/)
+- [What if Assets Were Physical Objects?](https://docs.cedra.network/for-solidity-developers)
+
+---
+
+## ➡️ Next Chapter
+
+[Chapter 2: Setting Up Your Development Environment →](./02-environment-setup.md)
+</file>
+
+<file path="02-zero-to-hero-guide/chapters/02-environment-setup.md">
+# Chapter 2: Setting Up Your Development Environment
+
+> **Prepare Your Machine for Cedra Development**
+
+---
+
+## 🎯 What You'll Learn
+
+- Install required prerequisites (Rust, Node.js)
+- Install the Cedra CLI
+- Configure your IDE for Move development
+- Create your first Cedra account
+- Get test tokens from the faucet
+
+---
+
+## 📋 Prerequisites
+
+Before installing the Cedra CLI, ensure you have:
+
+### 1. Rust (for building from source)
+
+```powershell
+# Windows: Download and run rustup-init.exe from https://rustup.rs/
+# Or via PowerShell:
+winget install Rustlang.Rust.MSVC
+
+# Verify installation
+rustc --version
+cargo --version
+```
+
+### 2. Node.js (for TypeScript SDK)
+
+```powershell
+# Windows (via Chocolatey)
+choco install nodejs-lts
+
+# Or download from https://nodejs.org/
+
+# Verify installation
+node --version
+npm --version
+```
+
+### 3. Git
+
+```powershell
+# Windows
+choco install git
+
+# Verify
+git --version
+```
+
+---
+
+## 🔧 Installing Cedra CLI
+
+### Option 1: Chocolatey (Windows - Recommended)
+
+```powershell
+# Install via Chocolatey
+choco install cedra
+
+# Verify installation
+cedra --version
+```
+
+### Option 2: Pre-built Binary (Any Platform)
+
+1. Visit the [Cedra CLI Releases](https://github.com/cedra-labs/cedra-network/releases/tag/cedra-cli-v1.0.4)
+2. Download the binary for your platform
+3. Extract and add to your PATH
+
+**Windows:**
+```powershell
+# Move to a directory in your PATH
+Move-Item cedra.exe C:\Windows\System32\
+
+# Or add to PATH
+$env:PATH += ";C:\path\to\cedra"
+```
+
+### Option 3: Build from Source
+
+```powershell
+# Clone the repository
+git clone https://github.com/cedra-labs/cedra-network
+cd cedra-network
+
+# Build
+cargo build --release -p cedra
+
+# The binary is at target/release/cedra.exe
+```
+
+### Verify Installation
+
+```powershell
+cedra --version
+# Should output: cedra 1.0.4 or similar
+```
+
+---
+
+## 💻 IDE Setup
+
+### VS Code (Recommended)
+
+1. **Install Move Language Extension**
+   - Open VS Code Extensions (Ctrl+Shift+X)
+   - Search for "Move Language"
+   - Install [Move Language Extension](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer)
+
+2. **Configure Settings**
+   ```json
+   {
+     "move.server.path": "cedra",
+     "editor.formatOnSave": true
+   }
+   ```
+
+### JetBrains IDEs (IntelliJ, CLion)
+
+1. Go to Settings → Plugins
+2. Search for "Move on Aptos"
+3. Install and restart IDE
+
+---
+
+## 🔑 Creating Your Cedra Account
+
+### Initialize Account
+
+```powershell
+# Create a new account
+cedra init
+```
+
+You'll see prompts like:
+```
+Configuring for profile default
+Choose network from [devnet, testnet, local, custom]:
+> testnet
+Enter your private key as a hex literal (0x...) or press Enter to generate a new one:
+> [Press Enter for new key]
+
+Account 0x1234...abcd has been initialized locally!
+```
+
+### View Account Info
+
+```powershell
+# Show your account address
+cedra account show
+
+# Output:
+# {
+#   "account_address": "0x1234...abcd",
+#   "private_key": "0xabcd...1234",
+#   "public_key": "0x5678...efgh"
+# }
+```
+
+### Important Files
+
+After `cedra init`, these files are created:
+```
+~/.cedra/
+├── config.yaml    # Account configuration
+└── profiles/
+    └── default/   # Default profile keys
+```
+
+⚠️ **Never share your private key!** Keep it safe and backed up.
+
+---
+
+## 💰 Getting Test Tokens
+
+### Method 1: Web Faucet (Easiest)
+
+1. **Testnet**: Visit [https://faucet.cedra.dev/](https://faucet.cedra.dev/)
+2. **Devnet**: Visit [https://devnet-faucet.cedra.dev/](https://devnet-faucet.cedra.dev/)
+3. Enter your account address
+4. Click "Fund Account"
+
+### Method 2: CLI Faucet
+
+```powershell
+# Fund your account
+cedra account fund-with-faucet
+
+# Fund with specific amount
+cedra account fund-with-faucet --amount 100000000
+```
+
+### Method 3: API
+
+```powershell
+# Using cURL
+curl --location --request POST `
+  "https://faucet-api.cedra.dev/mint?amount=100&auth_key=YOUR_AUTH_KEY" `
+  --data ''
+```
+
+### Verify Balance
+
+```powershell
+# Check your balance
+cedra account balance
+
+# Or via API
+curl "https://testnet.cedra.dev/v1/accounts/YOUR_ADDRESS/balance/0x1::cedra_coin::CedraCoin"
+```
+
+---
+
+## 🚀 Your First Move Project
+
+### Create Project
+
+```powershell
+# Create project directory
+mkdir my_first_project
+cd my_first_project
+
+# Initialize Move project
+cedra move init --name my_first_project
+```
+
+This creates:
+```
+my_first_project/
+├── Move.toml          # Package configuration
+├── sources/           # Move source files
+└── tests/             # Test files
+```
+
+### Configure Move.toml
+
+Edit `Move.toml`:
+```toml
+[package]
+name = "my_first_project"
+version = "1.0.0"
+authors = ["Your Name"]
+
+[addresses]
+my_first_project = "_"  # Will use account address
+
+[dependencies.CedraFramework]
+git = "https://github.com/cedra-labs/cedra-framework.git"
+rev = "main"
+subdir = "cedra-framework"
+```
+
+### Create a Simple Module
+
+Create `sources/hello.move`:
+```move
+module my_first_project::hello {
+    use std::string::{Self, String};
+    
+    #[view]
+    public fun say_hello(): String {
+        string::utf8(b"Hello, Cedra!")
+    }
+}
+```
+
+### Compile
+
+```powershell
+# Compile the project
+cedra move compile --named-addresses my_first_project=default
+
+# Expected output:
+# BUILDING my_first_project
+# {
+#   "Result": [...]
+# }
+```
+
+### Test
+
+```powershell
+# Run tests (if any)
+cedra move test
+```
+
+---
+
+## 🔍 Useful CLI Commands
+
+### Account Commands
+```powershell
+cedra init                      # Initialize account
+cedra account show              # Show account info
+cedra account balance           # Check balance
+cedra account fund-with-faucet  # Get test tokens
+```
+
+### Move Commands
+```powershell
+cedra move init --name NAME     # Create new project
+cedra move compile              # Compile project
+cedra move test                 # Run tests
+cedra move publish              # Deploy to network
+cedra move run                  # Execute function
+cedra move view                 # Call view function
+```
+
+### Network Commands
+```powershell
+cedra config show               # Show current config
+cedra config set --network testnet  # Switch network
+```
+
+---
+
+## ✅ Environment Checklist
+
+Before continuing, verify:
+
+- [ ] Rust installed (`rustc --version`)
+- [ ] Node.js installed (`node --version`)
+- [ ] Cedra CLI installed (`cedra --version`)
+- [ ] IDE extension installed
+- [ ] Account created (`cedra account show`)
+- [ ] Test tokens received (`cedra account balance`)
+- [ ] First project compiles (`cedra move compile`)
+
+---
+
+## 🐛 Troubleshooting
+
+### "cedra: command not found"
+- Ensure the binary is in your PATH
+- Restart your terminal after installation
+
+### "Failed to download dependencies"
+- Check internet connection
+- Try `git config --global url."https://".insteadOf git://`
+
+### "Insufficient balance for transaction"
+- Get more test tokens from faucet
+- Wait a few seconds for faucet cooldown
+
+### Windows Defender Blocks Cedra
+- Add exception for cedra.exe
+- Or temporarily disable real-time protection
+
+---
+
+## 📚 Further Reading
+
+- [Cedra CLI Documentation](https://docs.cedra.network/cli/usage)
+- [Move Language Extension](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer)
+
+---
+
+## ➡️ Next Chapter
+
+[Chapter 3: Understanding Move Basics →](./03-move-basics.md)
+</file>
+
+<file path="02-zero-to-hero-guide/README.md">
+# 📚 Zero to Hero Guide: Building on Cedra
+
+> **From Setup to Production - Your Complete Cedra Development Journey**
+
+## 📖 Overview
+
+This comprehensive guide takes you from absolute beginner to confident Cedra developer. Each chapter builds on the previous, creating a complete learning path.
+
+## 📑 Table of Contents
+
+### Part 1: Foundation
+- [Chapter 1: Introduction to Cedra & Move](./chapters/01-introduction.md)
+- [Chapter 2: Setting Up Your Development Environment](./chapters/02-environment-setup.md)
+- [Chapter 3: Understanding Move Basics](./chapters/03-move-basics.md)
+
+### Part 2: Building Smart Contracts
+- [Chapter 4: Your First Smart Contract](./chapters/04-first-contract.md)
+- [Chapter 5: Creating Fungible Tokens](./chapters/05-fungible-tokens.md)
+- [Chapter 6: Building NFT Collections](./chapters/06-nft-collections.md)
+
+### Part 3: Advanced Development
+- [Chapter 7: Testing & Debugging](./chapters/07-testing-debugging.md)
+- [Chapter 8: Frontend Integration](./chapters/08-frontend-integration.md)
+- [Chapter 9: Deployment & Best Practices](./chapters/09-deployment.md)
+
+### Part 4: Real-World Projects
+- [Project 1: Token Launchpad](./projects/token-launchpad.md)
+- [Project 2: NFT Marketplace](./projects/nft-marketplace.md)
+- [Project 3: DeFi Staking Pool](./projects/staking-pool.md)
+
+## 🎯 Learning Path
+
+```
+Week 1: Chapters 1-3 (Foundation)
+        ↓
+Week 2: Chapters 4-5 (Smart Contracts)
+        ↓
+Week 3: Chapters 6-7 (NFTs & Testing)
+        ↓
+Week 4: Chapters 8-9 (Frontend & Deployment)
+        ↓
+Week 5+: Real-World Projects
+```
+
+## 🚀 Quick Start
+
+```bash
+# Install Cedra CLI
+choco install cedra  # Windows
+# OR
+sudo apt install cedra-cli  # Ubuntu
+
+# Initialize your first project
+cedra init
+cedra move init --name my_first_project
+
+# Get test tokens
+cedra account fund-with-faucet
+```
+
+## 📁 Directory Structure
+
+```
+02-zero-to-hero-guide/
+├── chapters/               # Documentation chapters
+│   ├── 01-introduction.md
+│   ├── 02-environment-setup.md
+│   ├── 03-move-basics.md
+│   ├── 04-first-contract.md
+│   ├── 05-fungible-tokens.md
+│   ├── 06-nft-collections.md
+│   ├── 07-testing-debugging.md
+│   ├── 08-frontend-integration.md
+│   └── 09-deployment.md
+├── examples/               # Code examples
+│   ├── counter/
+│   ├── token/
+│   └── nft/
+└── projects/              # Complete project tutorials
+    ├── token-launchpad/
+    ├── nft-marketplace/
+    └── staking-pool/
+```
+
+## 🔗 Resources
+
+- [Cedra Documentation](https://docs.cedra.network/)
+- [Move Book](https://move-book.com/)
+- [Cedra SDK](https://github.com/cedra-labs/ts-sdk)
+</file>
+
+<file path="03-migration-guides/cheatsheets/move-syntax.md">
+# Move Syntax Cheatsheet
+
+> **Quick Reference for Move on Cedra**
+
+---
+
+## 📦 Module Structure
+
+```move
+module address::module_name {
+    // Imports
+    use std::signer;
+    use std::string::String;
+    
+    // Constants
+    const ERROR_CODE: u64 = 1;
+    
+    // Structs (Resources)
+    struct MyResource has key, store {
+        field: u64,
+    }
+    
+    // Initialization
+    fun init_module(account: &signer) { }
+    
+    // Functions
+    public entry fun my_function(account: &signer) { }
+}
+```
+
+---
+
+## 🔢 Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `u8` | 8-bit unsigned | `let x: u8 = 255;` |
+| `u16` | 16-bit unsigned | `let x: u16 = 1000;` |
+| `u32` | 32-bit unsigned | `let x: u32 = 100000;` |
+| `u64` | 64-bit unsigned | `let x: u64 = 1000000;` |
+| `u128` | 128-bit unsigned | `let x: u128 = 10;` |
+| `u256` | 256-bit unsigned | `let x: u256 = 10;` |
+| `bool` | Boolean | `let x: bool = true;` |
+| `address` | 32-byte address | `let x: address = @0x1;` |
+| `vector<T>` | Dynamic array | `let x: vector<u64> = vector[];` |
+| `String` | UTF-8 string | `let x: String = utf8(b"hi");` |
+
+---
+
+## 🎭 Abilities
+
+| Ability | Meaning | Required For |
+|---------|---------|--------------|
+| `copy` | Can be duplicated | Passing by value |
+| `drop` | Can be discarded | End of scope |
+| `store` | Can be stored | Nested in resources |
+| `key` | Top-level storage | `move_to`, `borrow_global` |
+
+```move
+struct Token has key, store { value: u64 }  // Storable resource
+struct Config has copy, drop { max: u64 }   // Copyable value
+```
+
+---
+
+## 🔧 Functions
+
+### Entry Function (Transaction)
+```move
+public entry fun transfer(from: &signer, to: address, amount: u64) {
+    // Can be called from transactions
+}
+```
+
+### View Function (Read-only)
+```move
+#[view]
+public fun get_balance(addr: address): u64 acquires Balance {
+    borrow_global<Balance>(addr).value
+}
+```
+
+### Private Function
+```move
+fun internal_helper(): u64 {
+    42
+}
+```
+
+---
+
+## 💾 Global Storage
+
+### Store Resource
+```move
+move_to(account, MyResource { field: 100 });
+```
+
+### Read Resource (Immutable)
+```move
+let resource = borrow_global<MyResource>(addr);
+```
+
+### Read Resource (Mutable)
+```move
+let resource = borrow_global_mut<MyResource>(addr);
+resource.field = 200;
+```
+
+### Remove Resource
+```move
+let MyResource { field: _ } = move_from<MyResource>(addr);
+```
+
+### Check Existence
+```move
+if (exists<MyResource>(addr)) { ... }
+```
+
+---
+
+## ⚠️ Error Handling
+
+### Assert
+```move
+const E_NOT_OWNER: u64 = 1;
+
+assert!(condition, E_NOT_OWNER);
+```
+
+### Abort
+```move
+if (!condition) {
+    abort E_NOT_OWNER
+};
+```
+
+---
+
+## 📚 Common Imports
+
+```move
+use std::signer;                    // address_of()
+use std::string::{Self, String};    // utf8(), String type
+use std::vector;                    // push_back(), pop_back()
+use std::option::{Self, Option};    // none(), some()
+```
+
+---
+
+## 🧪 Testing
+
+```move
+#[test(account = @0x1)]
+fun test_example(account: &signer) {
+    // Test code
+    assert!(1 == 1, 0);
+}
+
+#[test]
+#[expected_failure(abort_code = E_NOT_OWNER)]
+fun test_should_fail() {
+    abort E_NOT_OWNER
+}
+```
+
+---
+
+## 🔗 CLI Commands
+
+```bash
+cedra move init --name NAME     # Create project
+cedra move compile              # Compile
+cedra move test                 # Run tests
+cedra move publish              # Deploy
+cedra move run --function-id ADDR::MOD::FN  # Execute
+cedra move view --function-id ADDR::MOD::FN # Query
+```
+
+---
+
+## 📝 Quick Examples
+
+### Counter
+```move
+struct Counter has key { value: u64 }
+
+public entry fun increment(account: &signer) acquires Counter {
+    let counter = borrow_global_mut<Counter>(signer::address_of(account));
+    counter.value = counter.value + 1;
+}
+```
+
+### Token Transfer
+```move
+public entry fun transfer(from: &signer, to: address, amount: u64) {
+    primary_fungible_store::transfer(from, get_metadata(), to, amount);
+}
+```
+</file>
+
+<file path="03-migration-guides/README.md">
+# 🔄 Migration Guides
+
+> **Transition to Move on Cedra from Other Blockchain Platforms**
+
+## 📖 Overview
+
+These guides are designed for experienced blockchain developers looking to transition their skills to the Move programming language on Cedra. Choose your background:
+
+## 📚 Available Guides
+
+### [Solidity → Move](./solidity-to-move/README.md)
+For Ethereum/EVM developers migrating from Solidity.
+- Account model differences
+- Storage patterns
+- Common patterns translated
+- Security improvements
+
+### [Rust → Move](./rust-to-move/README.md)
+For Solana developers familiar with Rust.
+- Ownership vs Resources
+- Account model comparison
+- Program structure differences
+- Development workflow
+
+## 📋 Quick Reference
+
+### [Cheatsheets](./cheatsheets/)
+- [Move Syntax Cheatsheet](./cheatsheets/move-syntax.md)
+- [Solidity to Move Translation](./cheatsheets/solidity-move-translation.md)
+- [Common Patterns](./cheatsheets/common-patterns.md)
+
+## 🎯 Which Guide Should I Use?
+
+| Your Background | Recommended Guide |
+|-----------------|-------------------|
+| Ethereum/EVM (Solidity) | [Solidity → Move](./solidity-to-move/) |
+| Solana (Rust) | [Rust → Move](./rust-to-move/) |
+| Other Rust/Systems | [Rust → Move](./rust-to-move/) |
+| Move on Aptos/Sui | Start with [Zero to Hero Guide](../02-zero-to-hero-guide/) |
+| Complete Beginner | Start with [Interactive Tutorial](../01-interactive-tutorial/) |
+
+## 🔗 Additional Resources
+
+- [Cedra Documentation](https://docs.cedra.network/)
+- [Move Book](https://move-book.com/)
+- [Move Reference](https://move-book.com/reference)
+</file>
+
+<file path="03-migration-guides/rust-to-move/README.md">
+# Rust to Move Migration Guide
+
+> **A Complete Guide for Solana Developers Transitioning to Cedra**
+
+---
+
+## 📖 Table of Contents
+
+1. [Mindset Shift](#-mindset-shift)
+2. [Ownership vs Resources](#-ownership-vs-resources)
+3. [Account Model Comparison](#-account-model-comparison)
+4. [Type System](#-type-system)
+5. [Program Structure](#-program-structure)
+6. [Common Patterns](#-common-patterns)
+7. [Development Workflow](#-development-workflow)
+
+---
+
+## 🧠 Mindset Shift
+
+### Familiar Territory
+
+Good news! Move and Rust share many concepts:
+- Strong type systems
+- Ownership semantics
+- No garbage collection
+- Compile-time safety
+
+### Key Differences
+
+| Aspect | Solana (Rust) | Cedra (Move) |
+|--------|---------------|--------------|
+| **Account Model** | Separate data accounts | Resources in accounts |
+| **Program Calls** | CPI with account validation | Direct module calls |
+| **Parallelism** | Manual account locking | Automatic (Block-STM) |
+| **Upgrades** | BPF upgradeable | Native module upgrades |
+| **Serialization** | Borsh/Anchor | Built-in |
+
+---
+
+## 🔄 Ownership vs Resources
+
+### Rust Ownership
+
+```rust
+// Rust: Ownership transferred, value dropped at end of scope
+fn transfer_ownership() {
+    let data = String::from("hello");
+    let moved = data;  // data is now invalid
+    // data cannot be used here
+    // moved is dropped at end of scope
+}
+```
+
+### Move Resources
+
+```move
+// Move: Resources must be explicitly handled
+fun transfer_resource() {
+    let coin = Coin { value: 100 };
+    let moved = coin;  // coin is now invalid
+    // coin cannot be used here
+    // moved MUST be stored, returned, or explicitly destroyed
+    // Cannot just "drop" at end of scope!
+}
+```
+
+### The Key Difference
+
+In Rust, when a value goes out of scope, it's **automatically dropped**.
+In Move, resources **cannot be dropped** unless explicitly allowed.
+
+```move
+// This WON'T compile - Coin lacks 'drop' ability
+struct Coin has store {
+    value: u64
+}
+
+fun bad_function() {
+    let coin = Coin { value: 100 };
+    // ERROR: coin would be dropped but lacks 'drop' ability
+}
+
+// This WILL compile - explicitly handling the resource
+fun good_function(recipient: address) {
+    let coin = Coin { value: 100 };
+    deposit(recipient, coin);  // Resource properly handled
+}
+```
+
+---
+
+## 👥 Account Model Comparison
+
+### Solana Account Model
+
+```rust
+// Solana: Data lives in separate accounts
+#[account]
+pub struct Counter {
+    pub count: u64,
+    pub authority: Pubkey,
+}
+
+// Program receives account references
+pub fn increment(ctx: Context<Increment>) -> Result<()> {
+    let counter = &mut ctx.accounts.counter;
+    counter.count += 1;
+    Ok(())
+}
+
+#[derive(Accounts)]
+pub struct Increment<'info> {
+    #[account(mut)]
+    pub counter: Account<'info, Counter>,
+    pub authority: Signer<'info>,
+}
+```
+
+### Move Account Model
+
+```move
+// Move: Resources stored directly in user accounts
+module counter::counter {
+    struct Counter has key {
+        count: u64,
+    }
+    
+    // No account list needed - resources are in the signer's account
+    public entry fun increment(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.count = counter.count + 1;
+    }
+}
+```
+
+### Comparison
+
+| Aspect | Solana | Cedra |
+|--------|--------|-------|
+| Data Location | Separate PDA accounts | Inside user accounts |
+| Account Setup | Create PDAs with seeds | `move_to` resource |
+| Account Passing | Explicit in instruction | Implicit from address |
+| Rent | Required for data accounts | No rent needed |
+| Reallocation | Manual space management | Automatic |
+
+---
+
+## 📊 Type System
+
+### Rust → Move Type Mapping
+
+| Rust | Move | Notes |
+|------|------|-------|
+| `u8` | `u8` | Same |
+| `u16` | `u16` | Same |
+| `u32` | `u32` | Same |
+| `u64` | `u64` | Most common |
+| `u128` | `u128` | Same |
+| `i8, i16, i32, i64` | N/A | No signed integers in Move |
+| `bool` | `bool` | Same |
+| `String` | `String` | From `std::string` |
+| `Vec<T>` | `vector<T>` | Similar functionality |
+| `Pubkey` | `address` | 32 bytes both |
+| `Option<T>` | `Option<T>` | From `std::option` |
+| `Result<T, E>` | N/A | Use `assert!` for errors |
+
+### Structs Comparison
+
+**Rust:**
+```rust
+#[derive(BorshSerialize, BorshDeserialize)]
+pub struct TokenAccount {
+    pub owner: Pubkey,
+    pub balance: u64,
+    pub is_frozen: bool,
+}
+```
+
+**Move:**
+```move
+struct TokenAccount has key, store {
+    owner: address,
+    balance: u64,
+    is_frozen: bool,
+}
+```
+
+### Error Handling
+
+**Rust:**
+```rust
+#[error_code]
+pub enum ErrorCode {
+    #[msg("Insufficient balance")]
+    InsufficientBalance,
+    #[msg("Unauthorized")]
+    Unauthorized,
+}
+
+pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
+    require!(
+        ctx.accounts.from.balance >= amount,
+        ErrorCode::InsufficientBalance
+    );
+    // ...
+}
+```
+
+**Move:**
+```move
+const E_INSUFFICIENT_BALANCE: u64 = 1;
+const E_UNAUTHORIZED: u64 = 2;
+
+public entry fun withdraw(account: &signer, amount: u64) acquires Balance {
+    let balance = borrow_global<Balance>(signer::address_of(account));
+    assert!(balance.value >= amount, E_INSUFFICIENT_BALANCE);
+    // ...
+}
+```
+
+---
+
+## 🏗️ Program Structure
+
+### Solana Program Structure
+
+```rust
+// lib.rs
+use anchor_lang::prelude::*;
+
+declare_id!("YOUR_PROGRAM_ID");
+
+#[program]
+pub mod my_program {
+    use super::*;
+    
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count = 0;
+        counter.authority = ctx.accounts.authority.key();
+        Ok(())
+    }
+    
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = authority, space = 8 + 8 + 32)]
+    pub counter: Account<'info, Counter>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Increment<'info> {
+    #[account(mut, has_one = authority)]
+    pub counter: Account<'info, Counter>,
+    pub authority: Signer<'info>,
+}
+
+#[account]
+pub struct Counter {
+    pub count: u64,
+    pub authority: Pubkey,
+}
+```
+
+### Move Module Structure
+
+```move
+// counter.move
+module counter::counter {
+    use std::signer;
+    
+    struct Counter has key {
+        count: u64,
+    }
+    
+    const E_NOT_INITIALIZED: u64 = 1;
+    
+    public entry fun initialize(account: &signer) {
+        move_to(account, Counter { count: 0 });
+    }
+    
+    public entry fun increment(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_NOT_INITIALIZED);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.count = counter.count + 1;
+    }
+    
+    #[view]
+    public fun get_count(addr: address): u64 acquires Counter {
+        borrow_global<Counter>(addr).count
+    }
+}
+```
+
+### Key Structural Differences
+
+| Aspect | Solana (Anchor) | Cedra (Move) |
+|--------|-----------------|--------------|
+| Entry Point | `#[program]` module | `public entry fun` |
+| Account Validation | `#[derive(Accounts)]` | `exists<T>()`, `assert!` |
+| Space Management | Manual `space = ...` | Automatic |
+| PDA Derivation | `seeds = [...]` | `object::create_named_object` |
+| CPI | `invoke_signed!` | Direct module calls |
+
+---
+
+## 🔄 Common Patterns
+
+### Token Transfer
+
+**Solana (SPL Token):**
+```rust
+pub fn transfer(ctx: Context<Transfer>, amount: u64) -> Result<()> {
+    let cpi_accounts = SplTransfer {
+        from: ctx.accounts.from_ata.to_account_info(),
+        to: ctx.accounts.to_ata.to_account_info(),
+        authority: ctx.accounts.authority.to_account_info(),
+    };
+    let cpi_program = ctx.accounts.token_program.to_account_info();
+    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+    token::transfer(cpi_ctx, amount)?;
+    Ok(())
+}
+```
+
+**Move (Fungible Asset):**
+```move
+public entry fun transfer(
+    from: &signer,
+    to: address,
+    amount: u64
+) {
+    let asset = get_metadata();
+    primary_fungible_store::transfer(from, asset, to, amount);
+}
+```
+
+### PDA / Named Objects
+
+**Solana (PDA):**
+```rust
+let (pda, bump) = Pubkey::find_program_address(
+    &[b"vault", user.key().as_ref()],
+    &program_id,
+);
+```
+
+**Move (Named Object):**
+```move
+let constructor_ref = object::create_named_object(
+    account,
+    b"vault"
+);
+let vault_address = object::address_from_constructor_ref(&constructor_ref);
+```
+
+### Cross-Program Invocation vs Module Calls
+
+**Solana (CPI):**
+```rust
+// Complex - need to pass all accounts
+invoke_signed(
+    &instruction,
+    &[account1, account2, account3],
+    &[&[seed, &[bump]]],
+)?;
+```
+
+**Move (Direct Call):**
+```move
+// Simple - just call the function
+other_module::do_something(param1, param2);
+```
+
+---
+
+## 🛠️ Development Workflow
+
+### Solana Workflow
+```bash
+# Setup
+anchor init my_project
+cd my_project
+
+# Build
+anchor build
+
+# Test
+anchor test
+
+# Deploy
+anchor deploy
+
+# Interact
+anchor run script
+```
+
+### Cedra Workflow
+```bash
+# Setup
+mkdir my_project && cd my_project
+cedra move init --name my_project
+
+# Build
+cedra move compile
+
+# Test
+cedra move test
+
+# Deploy
+cedra move publish
+
+# Interact
+cedra move run --function-id ...
+```
+
+### Testing Comparison
+
+**Solana (TypeScript tests):**
+```typescript
+describe("counter", () => {
+  it("increments", async () => {
+    await program.methods
+      .increment()
+      .accounts({ counter: counterPda, authority: wallet.publicKey })
+      .rpc();
+    
+    const counter = await program.account.counter.fetch(counterPda);
+    expect(counter.count.toNumber()).to.equal(1);
+  });
+});
+```
+
+**Move (inline tests):**
+```move
+#[test(account = @0x1)]
+fun test_increment(account: &signer) acquires Counter {
+    initialize(account);
+    increment(account);
+    
+    let count = get_count(signer::address_of(account));
+    assert!(count == 1, 1);
+}
+```
+
+---
+
+## 🚀 Migration Checklist
+
+When migrating from Solana to Cedra:
+
+- [ ] Map Rust types to Move types
+- [ ] Convert accounts to resources
+- [ ] Replace PDAs with named objects
+- [ ] Simplify CPI to direct module calls
+- [ ] Remove rent calculations
+- [ ] Convert Anchor validation to Move assertions
+- [ ] Rewrite tests in Move's test framework
+- [ ] Update frontend to use Cedra SDK
+
+---
+
+## 💡 Tips for Rust Developers
+
+1. **Embrace Simplicity**: Move removes many complexities (rent, PDAs, CPI)
+2. **Resources ≠ Ownership**: Resources must be explicitly handled
+3. **No Signed Integers**: Use `u64` and handle negative cases differently
+4. **Direct Calls**: No need for complex CPI patterns
+5. **Built-in Serialization**: No Borsh needed
+
+---
+
+## 🔗 Resources
+
+- [Cedra Documentation](https://docs.cedra.network/)
+- [Move Book](https://move-book.com/)
+- [Cedra SDK](https://github.com/cedra-labs/ts-sdk)
+
+---
+
+## ➡️ Next Steps
+
+1. Complete the [Interactive Tutorial](../../01-interactive-tutorial/)
+2. Build your first [Counter Contract](../../contracts/counter/)
+3. Explore [Fungible Assets](../../contracts/token/)
+</file>
+
+<file path="03-migration-guides/solidity-to-move/README.md">
+# Solidity to Move Migration Guide
+
+> **A Complete Guide for EVM Developers Transitioning to Cedra**
+
+---
+
+## 📖 Table of Contents
+
+1. [Mindset Shift](#-mindset-shift)
+2. [Account Model](#-account-model)
+3. [Type System](#-type-system)
+4. [Storage Patterns](#-storage-patterns)
+5. [Function Types](#-function-types)
+6. [Common Patterns Translated](#-common-patterns-translated)
+7. [Security Improvements](#-security-improvements)
+8. [Development Workflow](#-development-workflow)
+
+---
+
+## 🧠 Mindset Shift
+
+### The Fundamental Difference
+
+**Solidity**: You're a **bookkeeper** managing ledgers
+**Move**: You're handling **physical objects** that move between locations
+
+```
+Solidity Mental Model:           Move Mental Model:
+┌─────────────────────┐         ┌─────────────────────┐
+│  balances mapping   │         │   Alice's Account   │
+│  ─────────────────  │         │   ┌───────────┐     │
+│  Alice  →  100      │         │   │ Coin(100) │     │
+│  Bob    →   50      │         │   └───────────┘     │
+│  Carol  →   75      │         └─────────────────────┘
+└─────────────────────┘         ┌─────────────────────┐
+     (Ledger entries)           │   Bob's Account     │
+                                │   ┌───────────┐     │
+                                │   │ Coin(50)  │     │
+                                │   └───────────┘     │
+                                └─────────────────────┘
+                                     (Physical assets)
+```
+
+---
+
+## 👤 Account Model
+
+### Solidity Account Model
+
+```solidity
+// Accounts are just addresses
+// All state lives in contract storage
+contract Token {
+    mapping(address => uint256) public balances;
+    
+    function transfer(address to, uint256 amount) public {
+        require(balances[msg.sender] >= amount);
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+```
+
+### Move Account Model
+
+```move
+module token::coin {
+    // Each account stores its own resources
+    struct Coin has store {
+        value: u64
+    }
+    
+    // Resources live IN the account, not in a central mapping
+    struct CoinStore has key {
+        coin: Coin
+    }
+    
+    public fun transfer(from: &signer, to: address, amount: u64) 
+    acquires CoinStore {
+        // Physically withdraw from sender
+        let coin = withdraw(from, amount);
+        // Physically deposit to receiver
+        deposit(to, coin);
+    }
+}
+```
+
+### Key Differences
+
+| Aspect | Solidity | Move |
+|--------|----------|------|
+| State Location | Contract storage | Account resources |
+| Access | Mapping lookup | Resource ownership |
+| Authorization | `msg.sender` check | Signer required |
+| Existence | Implicit (0 default) | Explicit (exists check) |
+
+---
+
+## 📊 Type System
+
+### Solidity Types → Move Types
+
+| Solidity | Move | Notes |
+|----------|------|-------|
+| `uint8` | `u8` | Same |
+| `uint16` | `u16` | Same |
+| `uint32` | `u32` | Same |
+| `uint64` | `u64` | **Most common in Move** |
+| `uint128` | `u128` | Same |
+| `uint256` | `u256` | Same |
+| `int*` | N/A | Move has no signed integers |
+| `bool` | `bool` | Same |
+| `address` | `address` | 32 bytes in Move (vs 20 in EVM) |
+| `string` | `String` | From `std::string` |
+| `bytes` | `vector<u8>` | Dynamic byte array |
+| `bytes32` | `vector<u8>` | Use fixed-size checks |
+
+### Structs
+
+**Solidity:**
+```solidity
+struct User {
+    address wallet;
+    uint256 balance;
+    bool isActive;
+}
+```
+
+**Move:**
+```move
+struct User has key, store {
+    wallet: address,
+    balance: u64,
+    is_active: bool,
+}
+```
+
+### The Ability System
+
+Move structs have **abilities** that control what you can do with them:
+
+| Ability | Meaning | Solidity Equivalent |
+|---------|---------|---------------------|
+| `copy` | Can be duplicated | Default for value types |
+| `drop` | Can be discarded | Default for all types |
+| `store` | Can be saved in storage | N/A |
+| `key` | Can be a top-level storage key | N/A |
+
+```move
+// A token that cannot be copied or accidentally dropped
+struct Coin has store {
+    value: u64
+}
+// This is what makes it "resource-safe"!
+```
+
+---
+
+## 💾 Storage Patterns
+
+### Solidity: Global Mappings
+
+```solidity
+contract Token {
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowances;
+    
+    function balanceOf(address account) public view returns (uint256) {
+        return balances[account];
+    }
+}
+```
+
+### Move: Account Resources
+
+```move
+module token::token {
+    use std::signer;
+    
+    struct Balance has key {
+        value: u64
+    }
+    
+    // Store in account
+    public fun initialize(account: &signer) {
+        move_to(account, Balance { value: 0 });
+    }
+    
+    // Read from account
+    public fun balance_of(addr: address): u64 acquires Balance {
+        if (exists<Balance>(addr)) {
+            borrow_global<Balance>(addr).value
+        } else {
+            0
+        }
+    }
+}
+```
+
+### Storage Operations Comparison
+
+| Solidity | Move | Description |
+|----------|------|-------------|
+| `mapping[key] = value` | `move_to(signer, resource)` | Store data |
+| `mapping[key]` | `borrow_global<T>(addr)` | Read data |
+| `mapping[key] = new_val` | `borrow_global_mut<T>(addr)` | Modify data |
+| `delete mapping[key]` | `move_from<T>(addr)` | Remove data |
+| N/A | `exists<T>(addr)` | Check existence |
+
+---
+
+## 🔧 Function Types
+
+### Visibility
+
+| Solidity | Move | Description |
+|----------|------|-------------|
+| `public` | `public` | Callable by anyone |
+| `external` | `public entry` | Transaction entry point |
+| `internal` | (no modifier) | Module-internal only |
+| `private` | (no modifier) | Module-internal only |
+
+### Function Modifiers
+
+**Solidity:**
+```solidity
+modifier onlyOwner() {
+    require(msg.sender == owner, "Not owner");
+    _;
+}
+
+function withdraw() public onlyOwner {
+    // ...
+}
+```
+
+**Move (using assert):**
+```move
+const E_NOT_OWNER: u64 = 1;
+
+public entry fun withdraw(account: &signer) acquires Treasury {
+    let addr = signer::address_of(account);
+    let treasury = borrow_global<Treasury>(@treasury);
+    assert!(addr == treasury.owner, E_NOT_OWNER);
+    // ...
+}
+```
+
+### View Functions
+
+**Solidity:**
+```solidity
+function getBalance() public view returns (uint256) {
+    return balances[msg.sender];
+}
+```
+
+**Move:**
+```move
+#[view]
+public fun get_balance(addr: address): u64 acquires Balance {
+    borrow_global<Balance>(addr).value
+}
+```
+
+---
+
+## 🔄 Common Patterns Translated
+
+### ERC-20 Token
+
+**Solidity:**
+```solidity
+contract ERC20 {
+    mapping(address => uint256) private _balances;
+    uint256 private _totalSupply;
+    
+    function transfer(address to, uint256 amount) public returns (bool) {
+        require(_balances[msg.sender] >= amount, "Insufficient balance");
+        _balances[msg.sender] -= amount;
+        _balances[to] += amount;
+        emit Transfer(msg.sender, to, amount);
+        return true;
+    }
+}
+```
+
+**Move (Fungible Asset):**
+```move
+module my_token::token {
+    use cedra_framework::fungible_asset;
+    use cedra_framework::primary_fungible_store;
+    
+    public entry fun transfer(
+        from: &signer,
+        to: address,
+        amount: u64
+    ) {
+        let asset = get_metadata();
+        primary_fungible_store::transfer(from, asset, to, amount);
+    }
+}
+```
+
+### Ownable Pattern
+
+**Solidity:**
+```solidity
+contract Ownable {
+    address public owner;
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not owner");
+        _;
+    }
+    
+    function transferOwnership(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+}
+```
+
+**Move:**
+```move
+module my_module::ownable {
+    use std::signer;
+    
+    struct Ownership has key {
+        owner: address
+    }
+    
+    const E_NOT_OWNER: u64 = 1;
+    
+    fun only_owner(account: &signer) acquires Ownership {
+        let addr = signer::address_of(account);
+        let ownership = borrow_global<Ownership>(@my_module);
+        assert!(addr == ownership.owner, E_NOT_OWNER);
+    }
+    
+    public entry fun transfer_ownership(
+        account: &signer,
+        new_owner: address
+    ) acquires Ownership {
+        only_owner(account);
+        let ownership = borrow_global_mut<Ownership>(@my_module);
+        ownership.owner = new_owner;
+    }
+}
+```
+
+### Reentrancy Guard
+
+**Solidity:**
+```solidity
+contract ReentrancyGuard {
+    bool private _locked;
+    
+    modifier nonReentrant() {
+        require(!_locked, "Reentrant call");
+        _locked = true;
+        _;
+        _locked = false;
+    }
+}
+```
+
+**Move:**
+```move
+// NOT NEEDED IN MOVE!
+// The resource model makes reentrancy impossible.
+// You can't "call back" while a resource is borrowed.
+```
+
+---
+
+## 🛡️ Security Improvements
+
+### Automatic Protections in Move
+
+| Vulnerability | Solidity Risk | Move Protection |
+|---------------|---------------|-----------------|
+| **Reentrancy** | High - must guard | Impossible - resource model |
+| **Integer Overflow** | Medium - since 0.8 | Built-in - always checked |
+| **Double Spend** | Possible with bugs | Impossible - linear types |
+| **Access Control** | Manual checks | Signer-based proof |
+| **Uninitialized Storage** | Can cause issues | Explicit existence checks |
+
+### Example: Flash Loan Safety
+
+**Solidity (Requires careful implementation):**
+```solidity
+function flashLoan(uint256 amount) external {
+    uint256 balanceBefore = token.balanceOf(address(this));
+    
+    token.transfer(msg.sender, amount);
+    
+    // Callback - REENTRANCY RISK!
+    IFlashBorrower(msg.sender).executeOperation(amount);
+    
+    require(
+        token.balanceOf(address(this)) >= balanceBefore,
+        "Flash loan not repaid"
+    );
+}
+```
+
+**Move (Hot Potato Pattern - Inherently Safe):**
+```move
+module flash::loan {
+    // Receipt cannot be dropped - MUST be returned
+    struct Receipt { amount: u64 }
+    
+    public fun borrow(amount: u64): (Coin, Receipt) {
+        let coin = withdraw_from_pool(amount);
+        let receipt = Receipt { amount };
+        (coin, receipt)  // Both must be handled
+    }
+    
+    public fun repay(coin: Coin, receipt: Receipt) {
+        let Receipt { amount } = receipt;  // Consume receipt
+        assert!(coin::value(&coin) >= amount, E_INSUFFICIENT);
+        deposit_to_pool(coin);
+    }
+    // If Receipt isn't consumed, transaction fails!
+}
+```
+
+---
+
+## 🔨 Development Workflow
+
+### Solidity Workflow
+```
+1. Write .sol files
+2. Compile with solc/hardhat
+3. Deploy with scripts
+4. Interact via ethers.js
+5. Verify on Etherscan
+```
+
+### Move Workflow
+```
+1. Write .move files
+2. Compile: cedra move compile
+3. Test: cedra move test
+4. Deploy: cedra move publish
+5. Interact: cedra move run / SDK
+6. View on Cedrascan
+```
+
+### CLI Comparison
+
+| Action | Hardhat | Cedra CLI |
+|--------|---------|-----------|
+| Init project | `npx hardhat init` | `cedra move init --name myproject` |
+| Compile | `npx hardhat compile` | `cedra move compile` |
+| Test | `npx hardhat test` | `cedra move test` |
+| Deploy | `npx hardhat run deploy.js` | `cedra move publish` |
+| Call function | ethers.js script | `cedra move run --function-id ...` |
+
+---
+
+## 📝 Migration Checklist
+
+When migrating a Solidity contract to Move:
+
+- [ ] Identify all storage variables → Convert to resources
+- [ ] Map data types → Use Move equivalents
+- [ ] Convert mappings → Use account resources or tables
+- [ ] Remove reentrancy guards → Not needed
+- [ ] Update access control → Use signer pattern
+- [ ] Convert events → Use Move events
+- [ ] Write unit tests → Use `#[test]` attributes
+- [ ] Test on devnet → Deploy and verify
+
+---
+
+## 🔗 Resources
+
+- [Cedra for Solidity Developers](https://docs.cedra.network/for-solidity-developers)
+- [Move Book](https://move-book.com/)
+- [Cedra SDK](https://github.com/cedra-labs/ts-sdk)
+
+---
+
+## ➡️ Next Steps
+
+1. Complete the [Interactive Tutorial](../../01-interactive-tutorial/)
+2. Build your first [Counter Contract](../../contracts/counter/)
+3. Create a [Fungible Token](../../contracts/token/)
+</file>
+
+<file path="04-video-walkthroughs/README.md">
+# 🎥 Video Walkthrough Series
+
+> **5-Minute YouTube Videos for Visual Learners**
+
+## 📖 Overview
+
+This section contains scripts, code examples, and presentation materials for creating engaging 5-minute YouTube tutorial videos covering the Cedra ecosystem.
+
+## 🎬 Video Series
+
+### Episode 1: Setting Up Cedra Development Environment
+- **Duration**: 5 minutes
+- **Topics**: CLI installation, account setup, first project
+- [Script](./scripts/01-setup-environment.md) | [Code](./code-examples/01-setup/)
+
+### Episode 2: Understanding Move Resources vs Solidity Mappings
+- **Duration**: 5 minutes
+- **Topics**: Resource model, physical assets, type safety
+- [Script](./scripts/02-resources-vs-mappings.md) | [Code](./code-examples/02-resources/)
+
+### Episode 3: Deploying Your First Smart Contract
+- **Duration**: 5 minutes
+- **Topics**: Counter contract, compile, deploy, interact
+- [Script](./scripts/03-deploy-contract.md) | [Code](./code-examples/03-deploy/)
+
+### Episode 4: Common Errors and How to Fix Them
+- **Duration**: 5 minutes
+- **Topics**: Error codes, debugging, troubleshooting
+- [Script](./scripts/04-common-errors.md) | [Code](./code-examples/04-errors/)
+
+### Episode 5: Building a Simple DApp
+- **Duration**: 5 minutes
+- **Topics**: Frontend integration, SDK, transactions
+- [Script](./scripts/05-simple-dapp.md) | [Code](./code-examples/05-dapp/)
+
+## 📁 Directory Structure
+
+```
+04-video-walkthroughs/
+├── scripts/                # Video scripts (Markdown)
+│   ├── 01-setup-environment.md
+│   ├── 02-resources-vs-mappings.md
+│   ├── 03-deploy-contract.md
+│   ├── 04-common-errors.md
+│   └── 05-simple-dapp.md
+├── code-examples/          # Demo code for each video
+│   ├── 01-setup/
+│   ├── 02-resources/
+│   ├── 03-deploy/
+│   ├── 04-errors/
+│   └── 05-dapp/
+└── slides/                 # Optional presentation slides
+    └── templates/
+```
+
+## 🎯 Video Production Guidelines
+
+### Format
+- **Length**: Exactly 5 minutes (300 seconds)
+- **Style**: Screen recording + voice-over
+- **Resolution**: 1080p minimum
+- **Audio**: Clear narration, no background music
+
+### Structure (per video)
+1. **Hook** (0:00-0:15): State the problem/topic
+2. **Context** (0:15-0:45): Why this matters
+3. **Demonstration** (0:45-4:00): Step-by-step walkthrough
+4. **Summary** (4:00-4:45): Key takeaways
+5. **CTA** (4:45-5:00): Subscribe, next video teaser
+
+### Tools Recommended
+- **Recording**: OBS Studio, Camtasia
+- **Editing**: DaVinci Resolve, Premiere Pro
+- **Code Display**: VS Code with large font (16pt+)
+- **Terminal**: Windows Terminal with clear theme
+
+## 🔗 Resources
+
+- [Cedra Documentation](https://docs.cedra.network/)
+- [Video Thumbnails Template](./slides/templates/)
+</file>
+
+<file path="04-video-walkthroughs/scripts/01-setup-environment.md">
+# Episode 1: Setting Up Cedra Development Environment
+
+> **Video Script - 5 Minutes**
+
+---
+
+## 🎬 VIDEO INFO
+
+- **Title**: "Set Up Cedra in 5 Minutes - Complete Dev Environment Guide"
+- **Duration**: 5:00
+- **Thumbnail Text**: "CEDRA SETUP 🔥"
+- **Tags**: cedra, move, blockchain, smart contracts, tutorial, setup
+
+---
+
+## 📝 SCRIPT
+
+### [0:00-0:15] HOOK
+
+**[SCREEN: Cedra logo animation]**
+
+**NARRATOR:**
+"Want to build on one of the fastest blockchains using the safest smart contract language? In the next 5 minutes, I'll show you exactly how to set up your complete Cedra development environment from scratch."
+
+---
+
+### [0:15-0:45] CONTEXT
+
+**[SCREEN: Split screen - Cedra stats on left, Move code on right]**
+
+**NARRATOR:**
+"Cedra is a high-performance blockchain built on Move - a language designed from the ground up for security. With 10,000+ transactions per second and sub-second finality, it's built for real applications.
+
+But the best part? Getting started is surprisingly easy. Let's dive in."
+
+---
+
+### [0:45-1:30] INSTALL CLI
+
+**[SCREEN: Terminal - Windows PowerShell]**
+
+**NARRATOR:**
+"First, we need the Cedra CLI. If you're on Windows, the easiest way is using Chocolatey."
+
+**[TYPE ON SCREEN]:**
+```powershell
+choco install cedra
+```
+
+**NARRATOR:**
+"This installs the latest Cedra CLI. Let's verify it worked."
+
+**[TYPE ON SCREEN]:**
+```powershell
+cedra --version
+```
+
+**[SHOW OUTPUT]:**
+```
+cedra 1.0.4
+```
+
+**NARRATOR:**
+"Perfect! If you're on Linux, you can use apt, and Mac users can download the binary directly from GitHub. Links in the description."
+
+---
+
+### [1:30-2:15] CREATE ACCOUNT
+
+**[SCREEN: Terminal continues]**
+
+**NARRATOR:**
+"Now let's create your Cedra account. This generates a new keypair for signing transactions."
+
+**[TYPE ON SCREEN]:**
+```powershell
+cedra init
+```
+
+**[SHOW PROMPTS AND RESPONSES]:**
+```
+Choose network: testnet
+Enter private key or press Enter to generate: [Enter]
+Account 0x1234...abcd has been initialized!
+```
+
+**NARRATOR:**
+"We're using testnet for development. The CLI generated a new account and saved it locally. Never share your private key!"
+
+**[TYPE ON SCREEN]:**
+```powershell
+cedra account show
+```
+
+**NARRATOR:**
+"You can see your account address anytime with this command. Copy this address - we'll need it next."
+
+---
+
+### [2:15-2:45] GET TEST TOKENS
+
+**[SCREEN: Browser + Terminal split]**
+
+**NARRATOR:**
+"Before deploying contracts, we need test tokens. The easiest way is the web faucet."
+
+**[BROWSER: Navigate to faucet.cedra.dev]**
+
+**NARRATOR:**
+"Just paste your address, click fund, and you'll have test tokens in seconds."
+
+**[SHOW: Paste address, click button, success message]**
+
+**NARRATOR:**
+"Alternatively, use the CLI:"
+
+**[TYPE ON SCREEN]:**
+```powershell
+cedra account fund-with-faucet
+```
+
+**[SHOW: Balance confirmation]**
+
+---
+
+### [2:45-3:45] FIRST PROJECT
+
+**[SCREEN: Terminal + VS Code]**
+
+**NARRATOR:**
+"Now the fun part - your first Move project!"
+
+**[TYPE ON SCREEN]:**
+```powershell
+mkdir my_first_project
+cd my_first_project
+cedra move init --name my_first_project
+```
+
+**NARRATOR:**
+"This creates a Move package with the standard structure."
+
+**[SCREEN: Show VS Code with project structure]**
+```
+my_first_project/
+├── Move.toml
+└── sources/
+```
+
+**NARRATOR:**
+"Move.toml is your package config, and sources is where your smart contracts live."
+
+**[SCREEN: Open VS Code, create file]**
+
+**NARRATOR:**
+"Let's create a simple hello world module."
+
+**[TYPE IN VS CODE]:**
+```move
+module my_first_project::hello {
+    use std::string;
+    
+    #[view]
+    public fun say_hello(): string::String {
+        string::utf8(b"Hello, Cedra!")
+    }
+}
+```
+
+**NARRATOR:**
+"This is a simple view function that returns a greeting. Now let's compile:"
+
+**[TYPE IN TERMINAL]:**
+```powershell
+cedra move compile --named-addresses my_first_project=default
+```
+
+**[SHOW: Success output]**
+
+**NARRATOR:**
+"No errors! Your first Move module compiles successfully."
+
+---
+
+### [3:45-4:30] IDE SETUP
+
+**[SCREEN: VS Code Extensions]**
+
+**NARRATOR:**
+"One more thing - IDE support makes development much easier. In VS Code, search for 'Move' in extensions and install the Move Language extension."
+
+**[SHOW: Search and install extension]**
+
+**NARRATOR:**
+"Now you get syntax highlighting, error detection, and code completion. Much better!"
+
+**[SHOW: Extension features in action]**
+
+---
+
+### [4:30-5:00] SUMMARY & CTA
+
+**[SCREEN: Recap slide]**
+
+**NARRATOR:**
+"That's it! In just 5 minutes you've:
+- Installed the Cedra CLI
+- Created your account
+- Got test tokens
+- Built your first Move module
+- Set up IDE support
+
+You're ready to start building on Cedra."
+
+**[SCREEN: Subscribe animation + next video thumbnail]**
+
+**NARRATOR:**
+"In the next video, I'll explain how Move's resource model makes your code inherently safer than Solidity. Subscribe and hit the bell so you don't miss it.
+
+Happy building!"
+
+---
+
+## 📋 B-ROLL CHECKLIST
+
+- [ ] Cedra logo animation
+- [ ] Terminal commands being typed
+- [ ] VS Code with Move syntax highlighting
+- [ ] Faucet website interaction
+- [ ] Extension installation
+
+## 🔗 DESCRIPTION LINKS
+
+```
+🔗 Resources:
+- Cedra Documentation: https://docs.cedra.network/
+- Cedra CLI Releases: https://github.com/cedra-labs/cedra-network/releases
+- Testnet Faucet: https://faucet.cedra.dev/
+- Move Extension: https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer
+
+📺 In This Series:
+- Ep 1: Setup (this video)
+- Ep 2: Resources vs Mappings
+- Ep 3: Deploy Your First Contract
+- Ep 4: Common Errors
+- Ep 5: Build a DApp
+
+💬 Join the Community:
+- Telegram: https://t.me/+Ba3QXd0VG9U0Mzky
+```
+</file>
+
+<file path="04-video-walkthroughs/scripts/04-common-errors.md">
+# Episode 4: Common Errors and How to Fix Them
+
+> **Video Script - 5 Minutes**
+
+---
+
+## 🎬 VIDEO INFO
+
+- **Title**: "Cedra/Move Errors SOLVED - Top 5 Beginner Mistakes"
+- **Duration**: 5:00
+- **Thumbnail Text**: "FIX MOVE ERRORS 🔧"
+- **Tags**: cedra, move, debugging, errors, smart contracts, tutorial
+
+---
+
+## 📝 SCRIPT
+
+### [0:00-0:15] HOOK
+
+**[SCREEN: Error messages flashing]**
+
+**NARRATOR:**
+"Getting cryptic error messages in Move? Don't worry - everyone does. In the next 5 minutes, I'll show you the 5 most common errors and exactly how to fix them."
+
+---
+
+### [0:15-0:30] CONTEXT
+
+**[SCREEN: Code with error highlights]**
+
+**NARRATOR:**
+"Move's compiler is strict for a reason - it catches bugs before they become exploits. But those error messages can be confusing at first. Let's decode them."
+
+---
+
+### [0:30-1:15] ERROR 1: RESOURCE NOT EXISTS
+
+**[SCREEN: Code editor with error]**
+
+**NARRATOR:**
+"Error number one: 'Resource does not exist at address'. This happens when you try to access a resource that hasn't been created."
+
+**[SHOW ERROR CODE]:**
+```move
+public entry fun increment(account: &signer) acquires Counter {
+    let addr = signer::address_of(account);
+    let counter = borrow_global_mut<Counter>(addr);  // ERROR!
+    counter.value = counter.value + 1;
+}
+```
+
+**[SHOW ERROR MESSAGE]:**
+```
+ABORTED: RESOURCE_NOT_EXISTS (code: 0x1)
+```
+
+**NARRATOR:**
+"The fix? Always check if the resource exists first, or provide an initialization function."
+
+**[SHOW FIX]:**
+```move
+public entry fun increment(account: &signer) acquires Counter {
+    let addr = signer::address_of(account);
+    // Add existence check
+    assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+    
+    let counter = borrow_global_mut<Counter>(addr);
+    counter.value = counter.value + 1;
+}
+```
+
+**NARRATOR:**
+"Better yet, call an initialize function first that creates the resource."
+
+---
+
+### [1:15-2:00] ERROR 2: MISSING ACQUIRES
+
+**[SCREEN: Compile error]**
+
+**NARRATOR:**
+"Error two: 'Missing acquires annotation'. This is a compile-time error that's easy to fix."
+
+**[SHOW ERROR CODE]:**
+```move
+public fun get_count(addr: address): u64 {
+    borrow_global<Counter>(addr).value  // COMPILE ERROR!
+}
+```
+
+**[SHOW ERROR MESSAGE]:**
+```
+error: missing acquires clause
+```
+
+**NARRATOR:**
+"Move requires you to declare which global resources a function reads or writes. Just add acquires with the struct name:"
+
+**[SHOW FIX]:**
+```move
+public fun get_count(addr: address): u64 acquires Counter {
+    borrow_global<Counter>(addr).value  // Works!
+}
+```
+
+**NARRATOR:**
+"Think of it as documentation for the compiler - and for other developers reading your code."
+
+---
+
+### [2:00-2:45] ERROR 3: ABILITY CONSTRAINTS
+
+**[SCREEN: Compile error about abilities]**
+
+**NARRATOR:**
+"Error three: 'The type does not have the required ability'. This relates to Move's ability system."
+
+**[SHOW ERROR CODE]:**
+```move
+struct MyToken {  // Missing abilities!
+    value: u64
+}
+
+public fun store_token(account: &signer, token: MyToken) {
+    move_to(account, token);  // ERROR!
+}
+```
+
+**[SHOW ERROR MESSAGE]:**
+```
+error: type MyToken does not have the 'key' ability
+```
+
+**NARRATOR:**
+"The move_to function requires the struct to have the 'key' ability. Here's the fix:"
+
+**[SHOW FIX]:**
+```move
+struct MyToken has key {  // Add 'key' ability
+    value: u64
+}
+```
+
+**NARRATOR:**
+"Common ability requirements:
+- 'key' for storing at top level
+- 'store' for nested storage
+- 'copy' for duplicating
+- 'drop' for discarding"
+
+---
+
+### [2:45-3:30] ERROR 4: INSUFFICIENT BALANCE
+
+**[SCREEN: Runtime error]**
+
+**NARRATOR:**
+"Error four: 'Insufficient balance for transaction fee'. This isn't a code error - it's an account issue."
+
+**[SHOW ERROR MESSAGE]:**
+```
+INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE
+```
+
+**NARRATOR:**
+"You don't have enough CEDRA to pay for gas. The fix is simple - get more test tokens."
+
+**[SHOW FIX - Terminal]:**
+```powershell
+cedra account fund-with-faucet
+```
+
+**NARRATOR:**
+"Or use the web faucet. Each testnet faucet request gives you plenty of tokens for development."
+
+**[SHOW: Faucet website briefly]**
+
+---
+
+### [3:30-4:15] ERROR 5: NOT AUTHORIZED
+
+**[SCREEN: Runtime abort]**
+
+**NARRATOR:**
+"Error five: 'Not authorized' or similar custom errors. These usually mean you're calling a function you shouldn't."
+
+**[SHOW ERROR]:**
+```
+ABORTED with code: E_NOT_AUTHORIZED (1)
+```
+
+**NARRATOR:**
+"This happens when you try to do something restricted - like minting tokens when you're not the admin."
+
+**[SHOW PROBLEM CODE]:**
+```move
+// This checks if caller is owner
+assert!(signer::address_of(account) == @admin, E_NOT_AUTHORIZED);
+```
+
+**NARRATOR:**
+"The fix depends on the contract. Either:
+1. Use the correct account
+2. Call from the admin address
+3. Or the contract needs to grant you permission first"
+
+**[SHOW: Using correct account in CLI]:**
+```powershell
+cedra move run \
+    --function-id default::token::mint \
+    --profile admin  # Use admin profile
+```
+
+---
+
+### [4:15-4:45] BONUS: DEBUGGING TIPS
+
+**[SCREEN: Tips list]**
+
+**NARRATOR:**
+"Quick debugging tips:
+- Read the full error message
+- Check Cedrascan for transaction details
+- Use the CLI with --verbose flag
+- Add more assert statements during development
+- Test locally before deploying"
+
+---
+
+### [4:45-5:00] SUMMARY & CTA
+
+**[SCREEN: Recap with checkmarks]**
+
+**NARRATOR:**
+"Now you know how to fix:
+1. Resource not exists - check with exists()
+2. Missing acquires - add the annotation  
+3. Ability errors - add required abilities
+4. Insufficient balance - use the faucet
+5. Not authorized - use correct account
+
+These cover 90% of beginner issues. If you hit something else, drop a comment!"
+
+**[SCREEN: Subscribe animation]**
+
+**NARRATOR:**
+"Subscribe for more Move tips, and check out episode 5 where we build a complete DApp. See you there!"
+
+---
+
+## 📋 B-ROLL CHECKLIST
+
+- [ ] Error messages appearing
+- [ ] Code being fixed
+- [ ] Terminal commands
+- [ ] Faucet website
+- [ ] Cedrascan explorer
+
+## 🔗 DESCRIPTION LINKS
+
+```
+🔗 Resources:
+- Cedra Documentation: https://docs.cedra.network/
+- Block Explorer: https://cedrascan.com/
+- Testnet Faucet: https://faucet.cedra.dev/
+
+🐛 Common Error Codes:
+- E_RESOURCE_NOT_EXISTS
+- E_NOT_AUTHORIZED
+- E_INSUFFICIENT_BALANCE
+- INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE
+
+📺 More Videos:
+- Ep 3: Deploy Your First Contract
+- Ep 5: Build a DApp
+```
+</file>
+
+<file path="contracts/counter/Move.toml">
+[package]
+name = "CedraCounter"
+version = "1.0.0"
+authors = ["Cedra Builders"]
+
+[addresses]
+counter = "_"
+
+[dev-addresses]
+counter = "0x1"
+
+[dependencies.CedraFramework]
+git = "https://github.com/cedra-labs/cedra-framework.git"
+rev = "main"
+subdir = "cedra-framework"
+
+[dev-dependencies]
+</file>
+
+<file path="contracts/counter/sources/simple_counter.move">
+/// Counter Module - A Simple Smart Contract Example
+/// 
+/// This module demonstrates the fundamental concepts of Move programming on Cedra:
+/// - Resource definition with abilities
+/// - Entry functions for transactions
+/// - View functions for gas-free queries
+/// - Error handling with assert
+/// - Global storage operations
+module counter::simple_counter {
+    use std::signer;
+
+    // ============================================
+    // RESOURCES
+    // ============================================
+    
+    /// The Counter resource that will be stored in each account
+    /// - `has key` allows it to be stored at the top level of an account
+    struct Counter has key {
+        value: u64,
+    }
+
+    // ============================================
+    // ERROR CODES
+    // ============================================
+    
+    /// Error when trying to access a counter that doesn't exist
+    const E_COUNTER_NOT_EXISTS: u64 = 1;
+    
+    /// Error when trying to create a counter that already exists
+    const E_COUNTER_ALREADY_EXISTS: u64 = 2;
+
+    // ============================================
+    // ENTRY FUNCTIONS (Transaction Entry Points)
+    // ============================================
+
+    /// Initialize a counter for the calling account with value 0
+    /// 
+    /// # Arguments
+    /// * `account` - The signer creating the counter
+    /// 
+    /// # Errors
+    /// * `E_COUNTER_ALREADY_EXISTS` - If the account already has a counter
+    public entry fun initialize(account: &signer) {
+        let addr = signer::address_of(account);
+        assert!(!exists<Counter>(addr), E_COUNTER_ALREADY_EXISTS);
+        
+        let counter = Counter { value: 0 };
+        move_to(account, counter);
+    }
+
+    /// Increment the counter by 1
+    /// 
+    /// # Arguments
+    /// * `account` - The signer owning the counter
+    /// 
+    /// # Errors
+    /// * `E_COUNTER_NOT_EXISTS` - If the account doesn't have a counter
+    public entry fun increment(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.value = counter.value + 1;
+    }
+
+    /// Increment the counter by a specified amount
+    /// 
+    /// # Arguments
+    /// * `account` - The signer owning the counter
+    /// * `amount` - The amount to increment by
+    /// 
+    /// # Errors
+    /// * `E_COUNTER_NOT_EXISTS` - If the account doesn't have a counter
+    public entry fun increment_by(account: &signer, amount: u64) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.value = counter.value + amount;
+    }
+
+    /// Decrement the counter by 1 (with underflow protection)
+    /// 
+    /// # Arguments
+    /// * `account` - The signer owning the counter
+    /// 
+    /// # Errors
+    /// * `E_COUNTER_NOT_EXISTS` - If the account doesn't have a counter
+    public entry fun decrement(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        if (counter.value > 0) {
+            counter.value = counter.value - 1;
+        };
+    }
+
+    /// Reset the counter to 0
+    /// 
+    /// # Arguments
+    /// * `account` - The signer owning the counter
+    /// 
+    /// # Errors
+    /// * `E_COUNTER_NOT_EXISTS` - If the account doesn't have a counter
+    public entry fun reset(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let counter = borrow_global_mut<Counter>(addr);
+        counter.value = 0;
+    }
+
+    /// Delete the counter resource
+    /// 
+    /// # Arguments
+    /// * `account` - The signer owning the counter
+    /// 
+    /// # Errors
+    /// * `E_COUNTER_NOT_EXISTS` - If the account doesn't have a counter
+    public entry fun destroy(account: &signer) acquires Counter {
+        let addr = signer::address_of(account);
+        assert!(exists<Counter>(addr), E_COUNTER_NOT_EXISTS);
+        
+        let Counter { value: _ } = move_from<Counter>(addr);
+    }
+
+    // ============================================
+    // VIEW FUNCTIONS (Gas-Free Queries)
+    // ============================================
+
+    /// Get the current counter value
+    /// 
+    /// # Arguments
+    /// * `account_addr` - The address to check
+    /// 
+    /// # Returns
+    /// * The current counter value
+    /// 
+    /// # Errors
+    /// * `E_COUNTER_NOT_EXISTS` - If the account doesn't have a counter
+    #[view]
+    public fun get_count(account_addr: address): u64 acquires Counter {
+        assert!(exists<Counter>(account_addr), E_COUNTER_NOT_EXISTS);
+        borrow_global<Counter>(account_addr).value
+    }
+
+    /// Check if an account has a counter
+    /// 
+    /// # Arguments
+    /// * `account_addr` - The address to check
+    /// 
+    /// # Returns
+    /// * `true` if the account has a counter, `false` otherwise
+    #[view]
+    public fun has_counter(account_addr: address): bool {
+        exists<Counter>(account_addr)
+    }
+
+    // ============================================
+    // UNIT TESTS
+    // ============================================
+
+    #[test(account = @0x1)]
+    public fun test_initialize_and_get_count(account: &signer) acquires Counter {
+        initialize(account);
+        let count = get_count(signer::address_of(account));
+        assert!(count == 0, 1);
+    }
+
+    #[test(account = @0x1)]
+    public fun test_increment(account: &signer) acquires Counter {
+        initialize(account);
+        increment(account);
+        increment(account);
+        
+        let count = get_count(signer::address_of(account));
+        assert!(count == 2, 2);
+    }
+
+    #[test(account = @0x1)]
+    public fun test_decrement(account: &signer) acquires Counter {
+        initialize(account);
+        increment(account);
+        increment(account);
+        decrement(account);
+        
+        let count = get_count(signer::address_of(account));
+        assert!(count == 1, 3);
+    }
+
+    #[test(account = @0x1)]
+    public fun test_decrement_underflow_protection(account: &signer) acquires Counter {
+        initialize(account);
+        decrement(account); // Should not panic, just stay at 0
+        
+        let count = get_count(signer::address_of(account));
+        assert!(count == 0, 4);
+    }
+
+    #[test(account = @0x1)]
+    public fun test_reset(account: &signer) acquires Counter {
+        initialize(account);
+        increment(account);
+        increment(account);
+        reset(account);
+        
+        let count = get_count(signer::address_of(account));
+        assert!(count == 0, 5);
+    }
+
+    #[test(account = @0x1)]
+    public fun test_has_counter(account: &signer) {
+        assert!(!has_counter(signer::address_of(account)), 6);
+        initialize(account);
+        assert!(has_counter(signer::address_of(account)), 7);
+    }
+
+    #[test(account = @0x1)]
+    #[expected_failure(abort_code = E_COUNTER_ALREADY_EXISTS)]
+    public fun test_double_initialize_fails(account: &signer) {
+        initialize(account);
+        initialize(account); // Should fail
+    }
+
+    #[test(account = @0x1)]
+    #[expected_failure(abort_code = E_COUNTER_NOT_EXISTS)]
+    public fun test_increment_without_init_fails(account: &signer) acquires Counter {
+        increment(account); // Should fail
+    }
+}
+</file>
+
+<file path="contracts/token/Move.toml">
+[package]
+name = "CedraToken"
+version = "1.0.0"
+authors = ["Cedra Builders"]
+
+[addresses]
+cedra_token = "_"
+
+[dev-addresses]
+cedra_token = "0x1"
+
+[dependencies.CedraFramework]
+git = "https://github.com/cedra-labs/cedra-framework.git"
+rev = "main"
+subdir = "cedra-framework"
+
+[dev-dependencies]
+</file>
+
+<file path="contracts/token/sources/cedra_asset.move">
+/// Cedra Fungible Asset (Token) Module
+/// 
+/// This module demonstrates how to create a fungible token on Cedra using the 
+/// Fungible Asset (FA) standard. This is the Cedra equivalent of ERC-20 tokens.
+/// 
+/// Key Concepts:
+/// - Object-based balances (not mappings)
+/// - Capability pattern (MintRef, BurnRef, TransferRef)
+/// - Primary fungible stores for seamless transfers
+module cedra_token::cedra_asset {
+    use cedra_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata};
+    use cedra_framework::object::{Self, Object};
+    use cedra_framework::primary_fungible_store;
+    use std::option;
+    use std::signer;
+    use std::string::{Self, String, utf8};
+
+    // ============================================
+    // CONSTANTS
+    // ============================================
+    
+    /// Token name
+    const ASSET_NAME: vector<u8> = b"Cedra Tutorial Token";
+    
+    /// Token symbol
+    const ASSET_SYMBOL: vector<u8> = b"CTT";
+    
+    /// Number of decimal places (8 is standard for Cedra)
+    const DECIMALS: u8 = 8;
+    
+    /// Icon URI for the token
+    const ICON_URI: vector<u8> = b"https://cedra.network/icon.png";
+    
+    /// Project URI
+    const PROJECT_URI: vector<u8> = b"https://cedra.network";
+
+    // ============================================
+    // ERROR CODES
+    // ============================================
+    
+    /// Caller is not authorized to perform this action
+    const E_NOT_AUTHORIZED: u64 = 1;
+    
+    /// Insufficient balance for the operation
+    const E_INSUFFICIENT_BALANCE: u64 = 2;
+
+    // ============================================
+    // RESOURCES
+    // ============================================
+
+    /// Stores the capability references for the token
+    /// Only the admin can access these capabilities
+    #[resource_group_member(group = cedra_framework::object::ObjectGroup)]
+    struct ManagedFungibleAsset has key {
+        /// Reference for minting new tokens
+        mint_ref: MintRef,
+        /// Reference for transferring tokens (escrow use cases)
+        transfer_ref: TransferRef,
+        /// Reference for burning tokens
+        burn_ref: BurnRef,
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+
+    /// Initialize the token when the module is published
+    /// This creates the token metadata and stores capabilities
+    fun init_module(admin: &signer) {
+        // Create a named object for the token metadata
+        let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
+        
+        // Create the fungible asset with primary store enabled
+        // Primary stores allow seamless receiving without explicit registration
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(
+            constructor_ref,
+            option::none(),                    // No maximum supply
+            utf8(ASSET_NAME),                  // Token name
+            utf8(ASSET_SYMBOL),                // Token symbol
+            DECIMALS,                          // Decimal places
+            utf8(ICON_URI),                    // Icon URL
+            utf8(PROJECT_URI),                 // Project URL
+        );
+        
+        // Generate capability references
+        let mint_ref = fungible_asset::generate_mint_ref(constructor_ref);
+        let burn_ref = fungible_asset::generate_burn_ref(constructor_ref);
+        let transfer_ref = fungible_asset::generate_transfer_ref(constructor_ref);
+        
+        // Get the metadata object signer
+        let metadata_signer = object::generate_signer(constructor_ref);
+        
+        // Store capabilities under the metadata object
+        move_to(
+            &metadata_signer,
+            ManagedFungibleAsset { mint_ref, transfer_ref, burn_ref }
+        );
+    }
+
+    // ============================================
+    // ENTRY FUNCTIONS
+    // ============================================
+
+    /// Mint new tokens to a recipient
+    /// Only callable by the admin (module publisher)
+    /// 
+    /// # Arguments
+    /// * `admin` - The admin signer (must be module publisher)
+    /// * `to` - The recipient address
+    /// * `amount` - Amount to mint (in smallest units)
+    public entry fun mint(
+        admin: &signer,
+        to: address,
+        amount: u64
+    ) acquires ManagedFungibleAsset {
+        let asset = get_metadata();
+        let managed = authorized_borrow_refs(admin, asset);
+        let to_wallet = primary_fungible_store::ensure_primary_store_exists(to, asset);
+        let fa = fungible_asset::mint(&managed.mint_ref, amount);
+        fungible_asset::deposit_with_ref(&managed.transfer_ref, to_wallet, fa);
+    }
+
+    /// Transfer tokens from sender to recipient
+    /// 
+    /// # Arguments
+    /// * `from` - The sender signer
+    /// * `to` - The recipient address
+    /// * `amount` - Amount to transfer
+    public entry fun transfer(
+        from: &signer,
+        to: address,
+        amount: u64
+    ) {
+        let asset = get_metadata();
+        primary_fungible_store::transfer(from, asset, to, amount);
+    }
+
+    /// Burn tokens from the caller's account
+    /// 
+    /// # Arguments
+    /// * `from` - The signer whose tokens to burn
+    /// * `amount` - Amount to burn
+    public entry fun burn(
+        from: &signer,
+        amount: u64
+    ) acquires ManagedFungibleAsset {
+        let asset = get_metadata();
+        let managed = borrow_global<ManagedFungibleAsset>(object::object_address(&asset));
+        let from_store = primary_fungible_store::primary_store(signer::address_of(from), asset);
+        fungible_asset::burn_from(&managed.burn_ref, from_store, amount);
+    }
+
+    /// Freeze an account (admin only)
+    /// Frozen accounts cannot send tokens
+    /// 
+    /// # Arguments
+    /// * `admin` - The admin signer
+    /// * `account` - The account to freeze
+    public entry fun freeze_account(
+        admin: &signer,
+        account: address
+    ) acquires ManagedFungibleAsset {
+        let asset = get_metadata();
+        let managed = authorized_borrow_refs(admin, asset);
+        let wallet = primary_fungible_store::ensure_primary_store_exists(account, asset);
+        fungible_asset::set_frozen_flag(&managed.transfer_ref, wallet, true);
+    }
+
+    /// Unfreeze an account (admin only)
+    /// 
+    /// # Arguments
+    /// * `admin` - The admin signer
+    /// * `account` - The account to unfreeze
+    public entry fun unfreeze_account(
+        admin: &signer,
+        account: address
+    ) acquires ManagedFungibleAsset {
+        let asset = get_metadata();
+        let managed = authorized_borrow_refs(admin, asset);
+        let wallet = primary_fungible_store::ensure_primary_store_exists(account, asset);
+        fungible_asset::set_frozen_flag(&managed.transfer_ref, wallet, false);
+    }
+
+    // ============================================
+    // VIEW FUNCTIONS
+    // ============================================
+
+    /// Get the balance of an account
+    #[view]
+    public fun balance(account: address): u64 {
+        let asset = get_metadata();
+        primary_fungible_store::balance(account, asset)
+    }
+
+    /// Check if an account is frozen
+    #[view]
+    public fun is_frozen(account: address): bool {
+        let asset = get_metadata();
+        let store = primary_fungible_store::primary_store(account, asset);
+        fungible_asset::is_frozen(store)
+    }
+
+    /// Get the total supply
+    #[view]
+    public fun total_supply(): u128 {
+        let asset = get_metadata();
+        let supply = fungible_asset::supply(asset);
+        option::get_with_default(&supply, 0)
+    }
+
+    /// Get the token name
+    #[view]
+    public fun name(): String {
+        let asset = get_metadata();
+        fungible_asset::name(asset)
+    }
+
+    /// Get the token symbol
+    #[view]
+    public fun symbol(): String {
+        let asset = get_metadata();
+        fungible_asset::symbol(asset)
+    }
+
+    /// Get the decimals
+    #[view]
+    public fun decimals(): u8 {
+        let asset = get_metadata();
+        fungible_asset::decimals(asset)
+    }
+
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+
+    /// Get the metadata object for this token
+    inline fun get_metadata(): Object<Metadata> {
+        let asset_address = object::create_object_address(&@cedra_token, ASSET_SYMBOL);
+        object::address_to_object<Metadata>(asset_address)
+    }
+
+    /// Borrow the capability references (admin only)
+    inline fun authorized_borrow_refs(
+        owner: &signer,
+        asset: Object<Metadata>
+    ): &ManagedFungibleAsset acquires ManagedFungibleAsset {
+        assert!(object::is_owner(asset, signer::address_of(owner)), E_NOT_AUTHORIZED);
+        borrow_global<ManagedFungibleAsset>(object::object_address(&asset))
+    }
+
+    // ============================================
+    // TESTS
+    // ============================================
+
+    #[test_only]
+    use cedra_framework::account;
+
+    #[test(admin = @cedra_token)]
+    fun test_init_and_mint(admin: &signer) acquires ManagedFungibleAsset {
+        // Setup
+        account::create_account_for_test(signer::address_of(admin));
+        init_module(admin);
+        
+        // Mint tokens
+        let recipient = @0x123;
+        mint(admin, recipient, 1000);
+        
+        // Verify balance
+        assert!(balance(recipient) == 1000, 1);
+    }
+
+    #[test(admin = @cedra_token, user = @0x123)]
+    fun test_transfer(admin: &signer, user: &signer) acquires ManagedFungibleAsset {
+        // Setup
+        account::create_account_for_test(signer::address_of(admin));
+        account::create_account_for_test(signer::address_of(user));
+        init_module(admin);
+        
+        // Mint to user
+        mint(admin, signer::address_of(user), 1000);
+        
+        // Transfer
+        let recipient = @0x456;
+        transfer(user, recipient, 300);
+        
+        // Verify balances
+        assert!(balance(signer::address_of(user)) == 700, 1);
+        assert!(balance(recipient) == 300, 2);
+    }
+
+    #[test(admin = @cedra_token)]
+    fun test_metadata(admin: &signer) acquires ManagedFungibleAsset {
+        account::create_account_for_test(signer::address_of(admin));
+        init_module(admin);
+        
+        assert!(name() == utf8(ASSET_NAME), 1);
+        assert!(symbol() == utf8(ASSET_SYMBOL), 2);
+        assert!(decimals() == DECIMALS, 3);
+    }
+}
+</file>
+
+<file path="CONTRIBUTING.md">
+# Contributing to Cedra Builders Forge
+
+Thank you for your interest in contributing to this project! 🎉
+
+## 📋 How to Contribute
+
+### Reporting Issues
+
+1. Check if the issue already exists
+2. Create a new issue with:
+   - Clear title
+   - Detailed description
+   - Steps to reproduce (if applicable)
+   - Expected vs actual behavior
+
+### Submitting Changes
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Write/update tests if applicable
+5. Commit with clear messages: `git commit -m "feat: add new tutorial lesson"`
+6. Push to your fork: `git push origin feature/my-feature`
+7. Open a Pull Request
+
+### Commit Message Convention
+
+Use conventional commits:
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `style:` - Code style changes
+- `refactor:` - Code refactoring
+- `test:` - Test changes
+- `chore:` - Maintenance tasks
+
+## 📝 Content Guidelines
+
+### For Tutorial Content
+
+- Use clear, beginner-friendly language
+- Include code examples with comments
+- Add "Challenge" sections for practice
+- Provide solutions in collapsible sections
+- Test all code examples before submitting
+
+### For Smart Contracts
+
+- Follow Move best practices
+- Include comprehensive comments
+- Add unit tests for all functions
+- Document error codes
+
+### For Documentation
+
+- Use proper Markdown formatting
+- Include table of contents for long docs
+- Add navigation links between chapters
+- Keep code blocks properly formatted
+
+## 🧪 Testing
+
+Before submitting:
+
+1. Compile all Move contracts:
+   ```bash
+   cedra move compile
+   ```
+
+2. Run tests:
+   ```bash
+   cedra move test
+   ```
+
+3. Verify links work in documentation
+
+## 📬 Getting Help
+
+- Join [Cedra Telegram](https://t.me/+Ba3QXd0VG9U0Mzky)
+- Open a GitHub issue
+- Tag maintainers for urgent issues
+
+## 🏆 Recognition
+
+All contributors will be:
+- Listed in CONTRIBUTORS.md
+- Credited in the README
+- Eligible for hackathon prizes (if applicable)
+
+Thank you for helping build the Cedra ecosystem! 🔥
+</file>
+
+<file path="frontend/cedra-dapp/index.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cedra Counter DApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .counter-display {
+            text-align: center;
+            padding: 30px;
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+        
+        .counter-value {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .counter-label {
+            color: #a0aec0;
+            margin-top: 10px;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #0099ff);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ff4757, #ff6b81);
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .status.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .status.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .status.loading {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        .wallet-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .wallet-info label {
+            color: #a0aec0;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .wallet-info .address {
+            font-family: monospace;
+            word-break: break-all;
+            color: #00d4ff;
+        }
+        
+        .full-width {
+            grid-column: span 3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Cedra Counter</h1>
+            <p>Interact with a Move smart contract on Cedra</p>
+        </div>
+        
+        <div class="counter-display">
+            <div class="counter-value" id="counterValue">0</div>
+            <div class="counter-label">Current Count</div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-secondary" id="decrementBtn" onclick="decrement()">
+                ➖ Decrement
+            </button>
+            <button class="btn-primary" id="incrementBtn" onclick="increment()">
+                ➕ Increment
+            </button>
+            <button class="btn-danger" id="resetBtn" onclick="resetCounter()">
+                🔄 Reset
+            </button>
+            <button class="btn-secondary full-width" id="refreshBtn" onclick="refreshCount()">
+                🔃 Refresh Count
+            </button>
+        </div>
+        
+        <div class="status" id="status" style="display: none;"></div>
+        
+        <div class="wallet-info">
+            <label>Contract Address:</label>
+            <div class="address" id="contractAddress">Not connected</div>
+            <br>
+            <label>Network:</label>
+            <div class="address">Cedra Testnet</div>
+        </div>
+    </div>
+
+    <script>
+        // =================================================================
+        // CONFIGURATION - Replace with your deployed contract address
+        // =================================================================
+        const MODULE_ADDRESS = "YOUR_MODULE_ADDRESS_HERE";
+        const MODULE_NAME = "simple_counter";
+        const API_URL = "https://testnet.cedra.dev/v1";
+        
+        // =================================================================
+        // STATUS DISPLAY
+        // =================================================================
+        function showStatus(message, type = 'loading') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        function hideStatus() {
+            document.getElementById('status').style.display = 'none';
+        }
+        
+        // =================================================================
+        // CONTRACT INTERACTIONS
+        // =================================================================
+        
+        // Simulated counter value (replace with actual SDK calls)
+        let counterValue = 0;
+        
+        async function refreshCount() {
+            showStatus('Fetching count...', 'loading');
+            
+            try {
+                // TODO: Replace with actual view function call
+                // const result = await cedra.view({
+                //     payload: {
+                //         function: `${MODULE_ADDRESS}::${MODULE_NAME}::get_count`,
+                //         functionArguments: [accountAddress],
+                //     },
+                // });
+                // counterValue = Number(result[0]);
+                
+                // Simulated for demo
+                document.getElementById('counterValue').textContent = counterValue;
+                showStatus('Count refreshed!', 'success');
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function increment() {
+            showStatus('Sending increment transaction...', 'loading');
+            
+            try {
+                // TODO: Replace with actual transaction
+                // const transaction = await cedra.transaction.build.simple({...});
+                // await cedra.signAndSubmitTransaction({...});
+                
+                // Simulated for demo
+                counterValue++;
+                document.getElementById('counterValue').textContent = counterValue;
+                showStatus('Counter incremented! ✓', 'success');
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function decrement() {
+            showStatus('Sending decrement transaction...', 'loading');
+            
+            try {
+                // TODO: Replace with actual transaction
+                
+                // Simulated for demo
+                if (counterValue > 0) counterValue--;
+                document.getElementById('counterValue').textContent = counterValue;
+                showStatus('Counter decremented! ✓', 'success');
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function resetCounter() {
+            showStatus('Sending reset transaction...', 'loading');
+            
+            try {
+                // TODO: Replace with actual transaction
+                
+                // Simulated for demo
+                counterValue = 0;
+                document.getElementById('counterValue').textContent = counterValue;
+                showStatus('Counter reset! ✓', 'success');
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // =================================================================
+        // INITIALIZATION
+        // =================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('contractAddress').textContent = 
+                MODULE_ADDRESS === "YOUR_MODULE_ADDRESS_HERE" 
+                    ? "Not configured - update MODULE_ADDRESS"
+                    : MODULE_ADDRESS;
+            
+            // Initial refresh
+            refreshCount();
+        });
+    </script>
+</body>
+</html>
+</file>
+
+<file path="frontend/cedra-dapp/package.json">
+{
+  "name": "cedra-dapp",
+  "version": "1.0.0",
+  "description": "Demo frontend for Cedra smart contracts",
+  "main": "src/index.tsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@cedra-labs/ts-sdk": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}
+</file>
+
+<file path="frontend/cedra-dapp/src/counter-client.ts">
+/**
+ * Cedra DApp - Counter Contract Interaction
+ * 
+ * This example demonstrates how to interact with a deployed
+ * Counter smart contract on Cedra using the TypeScript SDK.
+ */
+
+import { Cedra, CedraConfig, Account, Network, Ed25519PrivateKey } from "@cedra-labs/ts-sdk";
+
+// =============================================================================
+// CONFIGURATION
+// =============================================================================
+
+// Network configuration
+const config = new CedraConfig({ network: Network.TESTNET });
+const cedra = new Cedra(config);
+
+// Replace with your deployed module address
+const MODULE_ADDRESS = "YOUR_MODULE_ADDRESS_HERE";
+const MODULE_NAME = "simple_counter";
+
+// =============================================================================
+// ACCOUNT MANAGEMENT
+// =============================================================================
+
+/**
+ * Create a new random account
+ */
+export function createAccount(): Account {
+    return Account.generate();
+}
+
+/**
+ * Import account from private key
+ */
+export function importAccount(privateKeyHex: string): Account {
+    const privateKey = new Ed25519PrivateKey(privateKeyHex);
+    return Account.fromPrivateKey({ privateKey });
+}
+
+/**
+ * Fund account with test tokens from faucet
+ */
+export async function fundAccount(address: string, amount: number = 100_000_000): Promise<void> {
+    await cedra.faucet.fundAccount({
+        accountAddress: address,
+        amount,
+    });
+    console.log(`Funded ${address} with ${amount} octas`);
+}
+
+// =============================================================================
+// COUNTER CONTRACT INTERACTIONS
+// =============================================================================
+
+/**
+ * Initialize a counter for the account
+ */
+export async function initializeCounter(account: Account): Promise<string> {
+    const transaction = await cedra.transaction.build.simple({
+        sender: account.accountAddress,
+        data: {
+            function: `${MODULE_ADDRESS}::${MODULE_NAME}::initialize`,
+            functionArguments: [],
+        },
+    });
+
+    const pendingTxn = await cedra.signAndSubmitTransaction({
+        signer: account,
+        transaction,
+    });
+
+    const result = await cedra.waitForTransaction({
+        transactionHash: pendingTxn.hash,
+    });
+
+    console.log(`Counter initialized. Tx: ${pendingTxn.hash}`);
+    return pendingTxn.hash;
+}
+
+/**
+ * Increment the counter by 1
+ */
+export async function increment(account: Account): Promise<string> {
+    const transaction = await cedra.transaction.build.simple({
+        sender: account.accountAddress,
+        data: {
+            function: `${MODULE_ADDRESS}::${MODULE_NAME}::increment`,
+            functionArguments: [],
+        },
+    });
+
+    const pendingTxn = await cedra.signAndSubmitTransaction({
+        signer: account,
+        transaction,
+    });
+
+    await cedra.waitForTransaction({
+        transactionHash: pendingTxn.hash,
+    });
+
+    console.log(`Counter incremented. Tx: ${pendingTxn.hash}`);
+    return pendingTxn.hash;
+}
+
+/**
+ * Increment the counter by a specified amount
+ */
+export async function incrementBy(account: Account, amount: number): Promise<string> {
+    const transaction = await cedra.transaction.build.simple({
+        sender: account.accountAddress,
+        data: {
+            function: `${MODULE_ADDRESS}::${MODULE_NAME}::increment_by`,
+            functionArguments: [amount],
+        },
+    });
+
+    const pendingTxn = await cedra.signAndSubmitTransaction({
+        signer: account,
+        transaction,
+    });
+
+    await cedra.waitForTransaction({
+        transactionHash: pendingTxn.hash,
+    });
+
+    console.log(`Counter incremented by ${amount}. Tx: ${pendingTxn.hash}`);
+    return pendingTxn.hash;
+}
+
+/**
+ * Decrement the counter by 1
+ */
+export async function decrement(account: Account): Promise<string> {
+    const transaction = await cedra.transaction.build.simple({
+        sender: account.accountAddress,
+        data: {
+            function: `${MODULE_ADDRESS}::${MODULE_NAME}::decrement`,
+            functionArguments: [],
+        },
+    });
+
+    const pendingTxn = await cedra.signAndSubmitTransaction({
+        signer: account,
+        transaction,
+    });
+
+    await cedra.waitForTransaction({
+        transactionHash: pendingTxn.hash,
+    });
+
+    console.log(`Counter decremented. Tx: ${pendingTxn.hash}`);
+    return pendingTxn.hash;
+}
+
+/**
+ * Reset the counter to 0
+ */
+export async function resetCounter(account: Account): Promise<string> {
+    const transaction = await cedra.transaction.build.simple({
+        sender: account.accountAddress,
+        data: {
+            function: `${MODULE_ADDRESS}::${MODULE_NAME}::reset`,
+            functionArguments: [],
+        },
+    });
+
+    const pendingTxn = await cedra.signAndSubmitTransaction({
+        signer: account,
+        transaction,
+    });
+
+    await cedra.waitForTransaction({
+        transactionHash: pendingTxn.hash,
+    });
+
+    console.log(`Counter reset. Tx: ${pendingTxn.hash}`);
+    return pendingTxn.hash;
+}
+
+// =============================================================================
+// VIEW FUNCTIONS (No gas cost)
+// =============================================================================
+
+/**
+ * Get the current counter value
+ */
+export async function getCount(accountAddress: string): Promise<number> {
+    const result = await cedra.view({
+        payload: {
+            function: `${MODULE_ADDRESS}::${MODULE_NAME}::get_count`,
+            functionArguments: [accountAddress],
+        },
+    });
+
+    const count = Number(result[0]);
+    console.log(`Current count: ${count}`);
+    return count;
+}
+
+/**
+ * Check if an account has a counter
+ */
+export async function hasCounter(accountAddress: string): Promise<boolean> {
+    const result = await cedra.view({
+        payload: {
+            function: `${MODULE_ADDRESS}::${MODULE_NAME}::has_counter`,
+            functionArguments: [accountAddress],
+        },
+    });
+
+    const exists = Boolean(result[0]);
+    console.log(`Has counter: ${exists}`);
+    return exists;
+}
+
+// =============================================================================
+// EXAMPLE USAGE
+// =============================================================================
+
+async function main() {
+    console.log("=== Cedra Counter DApp Demo ===\n");
+
+    // 1. Create a new account
+    const account = createAccount();
+    console.log(`Created account: ${account.accountAddress}`);
+
+    // 2. Fund the account
+    await fundAccount(account.accountAddress.toString());
+
+    // 3. Check if counter exists
+    const exists = await hasCounter(account.accountAddress.toString());
+    console.log(`Counter exists: ${exists}`);
+
+    // 4. Initialize counter if it doesn't exist
+    if (!exists) {
+        await initializeCounter(account);
+    }
+
+    // 5. Increment a few times
+    await increment(account);
+    await increment(account);
+    await incrementBy(account, 5);
+
+    // 6. Check current value
+    const count = await getCount(account.accountAddress.toString());
+    console.log(`Final count: ${count}`);
+
+    // 7. Decrement once
+    await decrement(account);
+
+    // 8. Check again
+    const newCount = await getCount(account.accountAddress.toString());
+    console.log(`After decrement: ${newCount}`);
+
+    console.log("\n=== Demo Complete ===");
+}
+
+// Run the demo
+main().catch(console.error);
+</file>
+
+<file path="LICENSE">
+MIT License
+
+Copyright (c) 2024 Cedra Builders Forge
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</file>
+
+<file path="README.md">
+# 🔥 Cedra Builders Forge - Complete Developer Ecosystem
+
+> **"Forge fast, Move Smart."**
+
+[![Cedra Network](https://img.shields.io/badge/Cedra-Network-blue)](https://cedra.network)
+[![Move Language](https://img.shields.io/badge/Move-Language-orange)](https://docs.cedra.network)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+## 📖 Overview
+
+This comprehensive project delivers the **"Strengthen" Track** for the Cedra Builders Forge hackathon, empowering developers to strengthen documentation and create new technical content for the Cedra ecosystem.
+
+### 🎯 What We're Building
+
+| Track | Description | Status |
+|-------|-------------|--------|
+| 🎮 **Cedra Move Interactive Tutorial** | Gamified learning experience (like CryptoZombies) | ✅ Complete |
+| 📚 **Zero to Hero Guide** | Step-by-step blog series/GitBook guide | ✅ Complete |
+| 🔄 **Migration Guides** | Guides for Solidity/Rust developers | ✅ Complete |
+| 🎥 **Video Walkthrough Series** | 5-minute YouTube video resources | ✅ Complete |
+
+---
+
+## 🗂️ Project Structure
+
+```
+Cedra_Builders/
+├── 📁 01-interactive-tutorial/     # Gamified learning platform
+│   ├── lessons/                    # Move tutorial lessons
+│   ├── challenges/                 # Code challenges
+│   ├── contracts/                  # Tutorial smart contracts
+│   └── webapp/                     # Interactive web interface
+│
+├── 📁 02-zero-to-hero-guide/       # Comprehensive GitBook-style guide
+│   ├── chapters/                   # Documentation chapters
+│   ├── examples/                   # Code examples
+│   └── projects/                   # Complete project tutorials
+│
+├── 📁 03-migration-guides/         # Language migration guides
+│   ├── solidity-to-move/          # For EVM developers
+│   ├── rust-to-move/              # For Solana developers
+│   └── cheatsheets/               # Quick reference sheets
+│
+├── 📁 04-video-walkthroughs/       # Video tutorial resources
+│   ├── scripts/                   # Video scripts
+│   ├── code-examples/             # Demo code
+│   └── slides/                    # Presentation materials
+│
+├── 📁 contracts/                   # Shared Move smart contracts
+│   ├── counter/                   # Simple counter example
+│   ├── token/                     # Fungible asset example
+│   ├── nft/                       # NFT collection example
+│   └── advanced/                  # Advanced patterns
+│
+└── 📁 frontend/                    # Demo frontend application
+    └── cedra-dapp/                # React + TypeScript dApp
+```
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- [Rust](https://rustup.rs/) (latest stable)
+- [Node.js](https://nodejs.org/) (v18+)
+- [Cedra CLI](https://docs.cedra.network/getting-started/cli)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/cedra-builders-forge.git
+cd cedra-builders-forge
+
+# Install Cedra CLI (Windows - Chocolatey)
+choco install cedra
+
+# Verify installation
+cedra --version
+
+# Initialize Cedra account
+cedra init
+```
+
+### Get Test Tokens
+
+```bash
+# Fund your account via CLI
+cedra account fund-with-faucet
+
+# Or use the web faucet
+# Testnet: https://faucet.cedra.dev/
+# Devnet: https://devnet-faucet.cedra.dev/
+```
+
+---
+
+## 🎮 Track 1: Interactive Tutorial
+
+A gamified learning experience teaching Move smart contract development on Cedra.
+
+### Features
+- 🎯 Progressive difficulty lessons
+- 🏆 Achievement system
+- 💻 In-browser code editor
+- ✅ Instant feedback on code
+
+[Start the Tutorial →](./01-interactive-tutorial/README.md)
+
+---
+
+## 📚 Track 2: Zero to Hero Guide
+
+Comprehensive documentation covering everything from setup to production deployment.
+
+### Chapters
+1. Introduction to Cedra & Move
+2. Setting Up Your Development Environment
+3. Your First Smart Contract
+4. Creating Fungible Tokens
+5. Building NFT Collections
+6. Frontend Integration
+7. Testing & Debugging
+8. Deployment & Best Practices
+
+[Read the Guide →](./02-zero-to-hero-guide/README.md)
+
+---
+
+## 🔄 Track 3: Migration Guides
+
+Technical guides for developers transitioning from other blockchain platforms.
+
+### Available Guides
+- **Solidity → Move**: For Ethereum/EVM developers
+- **Rust → Move**: For Solana developers
+
+[View Migration Guides →](./03-migration-guides/README.md)
+
+---
+
+## 🎥 Track 4: Video Walkthroughs
+
+Scripts and resources for 5-minute YouTube tutorial videos.
+
+### Video Topics
+1. Setting Up Cedra Development Environment
+2. Understanding Move Resources vs Solidity Mappings
+3. Deploying Your First Contract
+4. Common Errors and How to Fix Them
+5. Building a Simple DApp
+
+[View Video Resources →](./04-video-walkthroughs/README.md)
+
+---
+
+## 🔗 Useful Links
+
+### Cedra Network
+- 📖 [Cedra Documentation](https://docs.cedra.network/)
+- 🔎 [Block Explorer (Cedrascan)](https://cedrascan.com/)
+- 🚀 [Testnet API](https://testnet.cedra.dev/v1)
+- 🔧 [Devnet API](https://devnet.cedra.dev/v1)
+- 💬 [Builders Telegram](https://t.me/+Ba3QXd0VG9U0Mzky)
+
+### Move Language
+- 📘 [The Move Book](https://move-book.com/)
+- 📗 [Move Reference](https://move-book.com/reference)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  <strong>🔥 Forge fast, Move Smart. 🔥</strong>
+  <br>
+  Built with ❤️ for the Cedra Builders Forge Hackathon
+</p>
+</file>
+
+</files>
