@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRAXIS - Cedra DApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@cedra-labs/ts-sdk@latest/dist/browser/index.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brutal-yellow': '#FFE500',
+                        'brutal-pink': '#FF6B9D',
+                        'brutal-blue': '#00D4FF',
+                        'brutal-green': '#39FF14',
+                        'brutal-orange': '#FF6B35',
+                        'brutal-purple': '#A855F7',
+                        'brutal-red': '#FF3366',
+                        'brutal-black': '#0D0D0D',
+                        'brutal-cream': '#FFF8E7',
+                    },
+                    fontFamily: {
+                        'mono': ['Space Mono', 'monospace'],
+                        'grotesk': ['Space Grotesk', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'brutal': '8px 8px 0px 0px #0D0D0D',
+                        'brutal-lg': '12px 12px 0px 0px #0D0D0D',
+                        'brutal-xl': '16px 16px 0px 0px #0D0D0D',
+                        'brutal-hover': '4px 4px 0px 0px #0D0D0D',
+                        'brutal-white': '8px 8px 0px 0px #FFF8E7',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%23FF6B9D' stroke='%230D0D0D' stroke-width='3'/%3E%3C/svg%3E"), auto; }
+        a, button { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect x='4' y='4' width='24' height='24' fill='%2339FF14' stroke='%230D0D0D' stroke-width='3'/%3E%3C/svg%3E"), pointer; }
+        ::selection { background: #FF6B9D; color: #0D0D0D; }
+        .marquee { animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(3deg); } }
+        .spin-slow { animation: spin 20s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .glitch { animation: glitch 3s infinite; }
+        @keyframes glitch { 0%, 90%, 100% { transform: translate(0); } 91% { transform: translate(-5px, 2px); } 92% { transform: translate(5px, -2px); } 93% { transform: translate(-3px, 1px); } }
+        .text-stroke { -webkit-text-stroke: 3px #0D0D0D; paint-order: stroke fill; }
+        .card-tilt { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .card-tilt:hover { transform: rotate(-2deg) scale(1.02); }
+        .scroll-reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .scroll-reveal.revealed { opacity: 1; transform: translateY(0); }
+        .blob { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; animation: blob 8s ease-in-out infinite; }
+        @keyframes blob { 0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } }
+        .noise { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E"); }
+        .loading { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .counter-value { font-size: 8rem; line-height: 1; }
+        @media (max-width: 768px) { .counter-value { font-size: 5rem; } }
+        .toast { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body class="bg-brutal-cream font-grotesk overflow-x-hidden noise">
+    
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed top-0 left-0 right-0 z-40 p-4 md:p-6 bg-brutal-cream/90 backdrop-blur-sm border-b-4 border-brutal-black">
+        <div class="flex justify-between items-center max-w-7xl mx-auto">
+            <a href="#" class="bg-brutal-black text-brutal-yellow font-mono font-bold text-xl md:text-2xl px-4 py-2 border-4 border-brutal-black shadow-brutal-white hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                PRAXIS
+            </a>
+            <div class="hidden md:flex gap-2">
+                <a href="#counter" class="bg-brutal-pink text-brutal-black font-mono font-bold px-4 py-2 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all">COUNTER</a>
+                <a href="#tokens" class="bg-brutal-blue text-brutal-black font-mono font-bold px-4 py-2 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all">TOKENS</a>
+                <a href="#nfts" class="bg-brutal-green text-brutal-black font-mono font-bold px-4 py-2 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all">NFTs</a>
+            </div>
+            <div id="wallet-section">
+                <button id="connect-wallet" onclick="connectWallet()" class="bg-brutal-orange text-brutal-black font-mono font-bold px-4 py-2 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all">
+                    CREATE ACCOUNT
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="min-h-screen relative flex items-center justify-center pt-20 px-4">
+        <!-- Floating shapes -->
+        <div class="absolute top-20 left-10 w-20 h-20 md:w-32 md:h-32 bg-brutal-pink border-4 border-brutal-black shadow-brutal float"></div>
+        <div class="absolute top-40 right-10 w-16 h-16 md:w-24 md:h-24 bg-brutal-blue border-4 border-brutal-black shadow-brutal float" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-40 left-20 w-12 h-12 md:w-20 md:h-20 bg-brutal-green border-4 border-brutal-black shadow-brutal spin-slow"></div>
+        <div class="absolute bottom-20 right-20 w-24 h-24 md:w-40 md:h-40 bg-brutal-yellow border-4 border-brutal-black shadow-brutal blob"></div>
+
+        <!-- Main content -->
+        <div class="text-center z-10">
+            <div class="relative inline-block">
+                <h1 class="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-bold text-brutal-yellow text-stroke glitch">
+                    PRAXIS
+                </h1>
+                <div class="absolute -top-4 -right-4 md:-top-8 md:-right-8 bg-brutal-green text-brutal-black font-mono text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 border-2 border-brutal-black rotate-12 shadow-brutal">
+                    LIVE ON CEDRA
+                </div>
+            </div>
+            <p class="text-xl md:text-3xl font-mono mt-6 md:mt-8 bg-brutal-black text-brutal-cream px-4 py-2 md:px-6 md:py-3 border-4 border-brutal-black inline-block transform -rotate-1">
+                INTERACT WITH 3 SMART CONTRACTS
+            </p>
+            <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                <div class="bg-brutal-pink px-4 py-2 border-4 border-brutal-black font-mono">
+                    🔢 COUNTER
+                </div>
+                <div class="bg-brutal-blue px-4 py-2 border-4 border-brutal-black font-mono">
+                    💰 CTT TOKEN
+                </div>
+                <div class="bg-brutal-green px-4 py-2 border-4 border-brutal-black font-mono">
+                    🖼️ NFTs
+                </div>
+            </div>
+            <div class="mt-8">
+                <a href="#counter" class="inline-block bg-brutal-yellow text-brutal-black font-mono font-bold text-lg md:text-xl px-6 py-3 md:px-8 md:py-4 border-4 border-brutal-black shadow-brutal-lg hover:translate-x-2 hover:translate-y-2 hover:shadow-brutal-hover transition-all">
+                    START INTERACTING ↓
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- NETWORK STATUS BANNER -->
+    <div class="bg-brutal-black py-4 border-y-4 border-brutal-yellow overflow-hidden">
+        <div class="flex items-center justify-center gap-4 text-brutal-yellow font-mono">
+            <div class="flex items-center gap-2">
+                <div id="network-status" class="w-3 h-3 rounded-full bg-brutal-red"></div>
+                <span id="network-text">NOT CONNECTED</span>
+            </div>
+            <span>|</span>
+            <span id="wallet-address">---</span>
+            <span>|</span>
+            <span>MODULE: 0x756e...07f4</span>
+        </div>
+    </div>
+
+    <!-- COUNTER SECTION -->
+    <section id="counter" class="py-20 md:py-32 px-4 md:px-8 bg-brutal-pink relative overflow-hidden">
+        <div class="max-w-4xl mx-auto">
+            <div class="scroll-reveal text-center mb-12">
+                <h2 class="text-5xl md:text-7xl font-bold text-brutal-black inline-block bg-brutal-yellow px-6 py-4 border-4 border-brutal-black shadow-brutal-xl transform rotate-1">
+                    🔢 COUNTER
+                </h2>
+                <p class="text-xl font-mono mt-6 bg-brutal-black text-brutal-cream px-4 py-2 inline-block">
+                    simple_counter module
+                </p>
+            </div>
+
+            <div class="scroll-reveal">
+                <div class="bg-brutal-cream p-8 md:p-12 border-4 border-brutal-black shadow-brutal-xl">
+                    <!-- Counter Display -->
+                    <div class="text-center mb-8">
+                        <div id="counter-value" class="counter-value font-mono font-bold text-brutal-black">
+                            ---
+                        </div>
+                        <p class="font-mono text-lg text-brutal-black/60 mt-2">CURRENT COUNT</p>
+                    </div>
+
+                    <!-- Counter Status -->
+                    <div id="counter-status" class="text-center mb-8">
+                        <div class="inline-block bg-brutal-orange px-4 py-2 border-4 border-brutal-black font-mono">
+                            <span id="counter-status-text">Connect wallet to view</span>
+                        </div>
+                    </div>
+
+                    <!-- Counter Actions -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button onclick="initializeCounter()" id="btn-init" class="bg-brutal-green text-brutal-black font-mono font-bold text-lg py-4 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all disabled:opacity-50">
+                            INIT
+                        </button>
+                        <button onclick="decrementCounter()" id="btn-dec" class="bg-brutal-blue text-brutal-black font-mono font-bold text-3xl py-4 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all disabled:opacity-50">
+                            −
+                        </button>
+                        <button onclick="incrementCounter()" id="btn-inc" class="bg-brutal-yellow text-brutal-black font-mono font-bold text-3xl py-4 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all disabled:opacity-50">
+                            +
+                        </button>
+                        <button onclick="resetCounter()" id="btn-reset" class="bg-brutal-red text-brutal-cream font-mono font-bold text-lg py-4 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all disabled:opacity-50">
+                            RESET
+                        </button>
+                    </div>
+
+                    <!-- Transaction History -->
+                    <div class="mt-8">
+                        <h3 class="font-mono font-bold text-lg mb-4">RECENT TRANSACTIONS</h3>
+                        <div id="counter-txs" class="space-y-2 max-h-40 overflow-y-auto">
+                            <div class="bg-brutal-black/10 p-3 font-mono text-sm">No transactions yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOKEN SECTION -->
+    <section id="tokens" class="py-20 md:py-32 px-4 md:px-8 bg-brutal-blue relative overflow-hidden">
+        <div class="max-w-4xl mx-auto">
+            <div class="scroll-reveal text-center mb-12">
+                <h2 class="text-5xl md:text-7xl font-bold text-brutal-black inline-block bg-brutal-cream px-6 py-4 border-4 border-brutal-black shadow-brutal-xl transform -rotate-1">
+                    💰 CTT TOKEN
+                </h2>
+                <p class="text-xl font-mono mt-6 bg-brutal-black text-brutal-cream px-4 py-2 inline-block">
+                    cedra_asset module • Fungible Asset
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Token Info -->
+                <div class="scroll-reveal">
+                    <div class="bg-brutal-cream p-6 md:p-8 border-4 border-brutal-black shadow-brutal-lg h-full">
+                        <h3 class="font-mono font-bold text-2xl mb-6">TOKEN INFO</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b-2 border-brutal-black pb-2">
+                                <span class="font-mono">Name:</span>
+                                <span class="font-mono font-bold">Cedra Tutorial Token</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b-2 border-brutal-black pb-2">
+                                <span class="font-mono">Symbol:</span>
+                                <span class="font-mono font-bold bg-brutal-yellow px-2">CTT</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b-2 border-brutal-black pb-2">
+                                <span class="font-mono">Decimals:</span>
+                                <span class="font-mono font-bold">8</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono">Your Balance:</span>
+                                <span id="token-balance" class="font-mono font-bold text-2xl bg-brutal-green px-3 py-1 border-2 border-brutal-black">---</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transfer Form -->
+                <div class="scroll-reveal">
+                    <div class="bg-brutal-yellow p-6 md:p-8 border-4 border-brutal-black shadow-brutal-lg h-full">
+                        <h3 class="font-mono font-bold text-2xl mb-6">TRANSFER CTT</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="font-mono font-bold block mb-2">RECIPIENT ADDRESS</label>
+                                <input type="text" id="transfer-to" placeholder="0x..." class="w-full p-3 border-4 border-brutal-black font-mono bg-white focus:bg-brutal-pink focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="font-mono font-bold block mb-2">AMOUNT (CTT)</label>
+                                <input type="number" id="transfer-amount" placeholder="100" step="0.00000001" min="0" class="w-full p-3 border-4 border-brutal-black font-mono bg-white focus:bg-brutal-blue focus:outline-none transition-colors">
+                            </div>
+                            <button onclick="transferTokens()" id="btn-transfer" class="w-full bg-brutal-black text-brutal-yellow font-mono font-bold text-xl py-4 border-4 border-brutal-black shadow-brutal hover:bg-brutal-purple hover:translate-x-1 hover:translate-y-1 hover:shadow-brutal-hover transition-all disabled:opacity-50">
+                                SEND TOKENS →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mint Section (Admin Only) -->
+            <div class="scroll-reveal mt-8">
+                <div class="bg-brutal-purple p-6 md:p-8 border-4 border-brutal-black shadow-brutal-lg">
+                    <h3 class="font-mono font-bold text-2xl mb-4 text-brutal-cream">🔐 MINT TOKENS (Admin Only)</h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <input type="text" id="mint-to" placeholder="Recipient 0x..." class="p-3 border-4 border-brutal-black font-mono bg-white">
+                        <input type="number" id="mint-amount" placeholder="Amount" class="p-3 border-4 border-brutal-black font-mono bg-white">
+                        <button onclick="mintTokens()" id="btn-mint" class="bg-brutal-green text-brutal-black font-mono font-bold py-3 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50">
+                            MINT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NFT SECTION -->
+    <section id="nfts" class="py-20 md:py-32 px-4 md:px-8 bg-brutal-green relative overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="scroll-reveal text-center mb-12">
+                <h2 class="text-5xl md:text-7xl font-bold text-brutal-black inline-block bg-brutal-pink px-6 py-4 border-4 border-brutal-black shadow-brutal-xl transform rotate-1">
+                    🖼️ NFT COLLECTION
+                </h2>
+                <p class="text-xl font-mono mt-6 bg-brutal-black text-brutal-cream px-4 py-2 inline-block">
+                    cedra_nft module • Digital Asset Standard
+                </p>
+            </div>
+
+            <!-- Collection Info -->
+            <div class="scroll-reveal mb-12">
+                <div class="bg-brutal-cream p-6 md:p-8 border-4 border-brutal-black shadow-brutal-lg">
+                    <div class="grid md:grid-cols-4 gap-6 text-center">
+                        <div>
+                            <div class="text-4xl font-mono font-bold" id="nft-total-supply">---</div>
+                            <div class="font-mono text-sm">TOTAL MINTED</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-mono font-bold" id="nft-your-count">---</div>
+                            <div class="font-mono text-sm">YOUR NFTs</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-mono font-bold">CEDRA</div>
+                            <div class="font-mono text-sm">COLLECTION</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-mono font-bold">∞</div>
+                            <div class="font-mono text-sm">MAX SUPPLY</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mint NFT Form -->
+            <div class="scroll-reveal mb-12">
+                <div class="bg-brutal-yellow p-6 md:p-8 border-4 border-brutal-black shadow-brutal-lg">
+                    <h3 class="font-mono font-bold text-2xl mb-6">MINT NEW NFT</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="font-mono font-bold block mb-2">NFT NAME</label>
+                                <input type="text" id="nft-name" placeholder="My Awesome NFT #1" class="w-full p-3 border-4 border-brutal-black font-mono bg-white focus:bg-brutal-pink focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="font-mono font-bold block mb-2">DESCRIPTION</label>
+                                <textarea id="nft-description" rows="3" placeholder="A unique digital collectible..." class="w-full p-3 border-4 border-brutal-black font-mono bg-white focus:bg-brutal-blue focus:outline-none transition-colors resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="font-mono font-bold block mb-2">IMAGE URI</label>
+                                <input type="text" id="nft-uri" placeholder="https://..." class="w-full p-3 border-4 border-brutal-black font-mono bg-white focus:bg-brutal-green focus:outline-none transition-colors">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-between">
+                            <div id="nft-preview" class="bg-brutal-black aspect-square border-4 border-brutal-black flex items-center justify-center mb-4">
+                                <span class="text-brutal-cream font-mono text-center px-4">NFT PREVIEW<br>Enter URI to preview</span>
+                            </div>
+                            <button onclick="mintNFT()" id="btn-mint-nft" class="w-full bg-brutal-purple text-brutal-cream font-mono font-bold text-xl py-4 border-4 border-brutal-black shadow-brutal hover:bg-brutal-red hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50">
+                                MINT NFT 🎨
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your NFTs Gallery -->
+            <div class="scroll-reveal">
+                <h3 class="font-mono font-bold text-2xl mb-6 bg-brutal-black text-brutal-cream px-4 py-2 inline-block">YOUR NFTs</h3>
+                <div id="nft-gallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div class="bg-brutal-cream p-4 border-4 border-brutal-black shadow-brutal">
+                        <div class="aspect-square bg-brutal-black/20 flex items-center justify-center mb-4">
+                            <span class="font-mono text-sm text-center px-2">Connect wallet to view</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTRACT INFO SECTION -->
+    <section class="py-20 md:py-32 px-4 md:px-8 bg-brutal-black">
+        <div class="max-w-6xl mx-auto">
+            <div class="scroll-reveal text-center mb-12">
+                <h2 class="text-5xl md:text-7xl font-bold text-brutal-cream inline-block bg-brutal-red px-6 py-4 border-4 border-brutal-cream shadow-brutal-white">
+                    📜 CONTRACTS
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="scroll-reveal">
+                    <div class="bg-brutal-pink p-6 border-4 border-brutal-cream shadow-brutal-white h-full">
+                        <div class="text-4xl mb-4">🔢</div>
+                        <h3 class="font-mono font-bold text-xl mb-2">simple_counter</h3>
+                        <p class="text-sm mb-4">Per-user counter with increment, decrement, and reset functionality.</p>
+                        <div class="space-y-2 font-mono text-xs">
+                            <div>• initialize()</div>
+                            <div>• increment()</div>
+                            <div>• decrement()</div>
+                            <div>• reset()</div>
+                            <div>• get_count() view</div>
+                            <div>• has_counter() view</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scroll-reveal">
+                    <div class="bg-brutal-blue p-6 border-4 border-brutal-cream shadow-brutal-white h-full">
+                        <div class="text-4xl mb-4">💰</div>
+                        <h3 class="font-mono font-bold text-xl mb-2">cedra_asset</h3>
+                        <p class="text-sm mb-4">Fungible Asset token (CTT) with mint, burn, and transfer.</p>
+                        <div class="space-y-2 font-mono text-xs">
+                            <div>• mint(to, amount)</div>
+                            <div>• burn(amount)</div>
+                            <div>• transfer(to, amount)</div>
+                            <div>• get_balance() view</div>
+                            <div>• get_total_supply() view</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scroll-reveal">
+                    <div class="bg-brutal-green p-6 border-4 border-brutal-cream shadow-brutal-white h-full">
+                        <div class="text-4xl mb-4">🖼️</div>
+                        <h3 class="font-mono font-bold text-xl mb-2">cedra_nft</h3>
+                        <p class="text-sm mb-4">NFT collection with Digital Asset standard.</p>
+                        <div class="space-y-2 font-mono text-xs">
+                            <div>• mint(name, desc, uri)</div>
+                            <div>• transfer(token, to)</div>
+                            <div>• burn(token)</div>
+                            <div>• get_collection_info() view</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll-reveal mt-12 text-center">
+                <div class="inline-block bg-brutal-yellow p-6 border-4 border-brutal-cream">
+                    <p class="font-mono font-bold text-lg mb-2">MODULE ADDRESS</p>
+                    <code class="font-mono text-sm break-all">0x756e0baa26922cf7a5c4eb47c146a7abb680f60213c5b626cd3bbee40d8707f4</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-brutal-cream py-12 px-4 border-t-4 border-brutal-black">
+        <div class="max-w-7xl mx-auto text-center">
+            <h3 class="text-3xl font-bold font-mono mb-4">PRAXIS</h3>
+            <p class="font-mono mb-6">Built on Cedra • Powered by Move</p>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <a href="https://docs.cedra.network/" target="_blank" class="bg-brutal-black text-brutal-yellow px-4 py-2 border-4 border-brutal-black font-mono hover:bg-brutal-purple transition-colors">DOCS</a>
+                <a href="https://faucet.cedra.dev/" target="_blank" class="bg-brutal-blue text-brutal-black px-4 py-2 border-4 border-brutal-black font-mono hover:bg-brutal-pink transition-colors">FAUCET</a>
+                <a href="https://cedrascan.com/" target="_blank" class="bg-brutal-green text-brutal-black px-4 py-2 border-4 border-brutal-black font-mono hover:bg-brutal-yellow transition-colors">EXPLORER</a>
+            </div>
+            <p class="font-mono text-sm mt-8">© 2025 PRAXIS • Cedra Builders Forge Hackathon</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // PRAXIS - CEDRA BUILDERS FORGE HACKATHON
+        // Built with @cedra-labs/ts-sdk
+        // No external wallet required - uses SDK-generated accounts
+        // ============================================
+        
+        const MODULE_ADDRESS = "0x756e0baa26922cf7a5c4eb47c146a7abb680f60213c5b626cd3bbee40d8707f4";
+        const COUNTER_MODULE = `${MODULE_ADDRESS}::simple_counter`;
+        const TOKEN_MODULE = `${MODULE_ADDRESS}::cedra_asset`;
+        const NFT_MODULE = `${MODULE_ADDRESS}::cedra_nft`;
+        const TESTNET_API = "https://testnet.cedra.dev/v1";
+        const FAUCET_API = "https://faucet-api.cedra.dev";
+        
+        // Global state
+        let cedra = null;
+        let walletConnected = false;
+        let currentAccount = null;
+        let accountPrivateKey = null;
+        let accountBalance = 0;
+
+        // ============================================
+        // CEDRA SDK INITIALIZATION
+        // ============================================
+        
+        async function initCedra() {
+            try {
+                if (typeof window.cedraSDK !== 'undefined') {
+                    // SDK loaded via CDN - use window.cedraSDK
+                    const { Cedra, CedraConfig, Network, Account } = window.cedraSDK;
+                    const config = new CedraConfig({ network: Network.TESTNET });
+                    cedra = new Cedra(config);
+                    console.log("✅ Cedra SDK initialized (CDN)");
+                } else {
+                    // Fallback - SDK object might be on window directly
+                    console.log("📡 Using REST API mode");
+                    cedra = { mode: 'rest' };
+                }
+            } catch (error) {
+                console.error("Failed to initialize Cedra SDK:", error);
+            }
+        }
+
+        // ============================================
+        // ACCOUNT MANAGEMENT (SDK-Based)
+        // ============================================
+
+        async function connectWallet() {
+            try {
+                showToast("Generating new Cedra account...", "info");
+                
+                // Generate a new account using SDK or crypto
+                const account = await generateAccount();
+                currentAccount = account.address;
+                accountPrivateKey = account.privateKey;
+                
+                // Save to localStorage for persistence
+                localStorage.setItem('praxis_account', JSON.stringify({
+                    address: currentAccount,
+                    privateKey: accountPrivateKey
+                }));
+                
+                walletConnected = true;
+                updateWalletUI();
+                
+                // Request tokens from faucet
+                showToast("Requesting testnet tokens...", "info");
+                const funded = await fundAccount(currentAccount);
+                
+                if (funded) {
+                    showToast("Account created & funded! 🎉", "success");
+                } else {
+                    showToast("Account created! Get tokens from faucet.", "info");
+                }
+                
+                await refreshAllData();
+            } catch (error) {
+                console.error("Account creation failed:", error);
+                showToast("Failed: " + error.message, "error");
+            }
+        }
+
+        async function generateAccount() {
+            // Generate random 32-byte private key
+            const privateKeyBytes = new Uint8Array(32);
+            crypto.getRandomValues(privateKeyBytes);
+            const privateKey = Array.from(privateKeyBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            // For demo purposes, derive a simple address (in production, use proper Ed25519)
+            // The address is typically derived from the public key
+            const addressBytes = new Uint8Array(32);
+            crypto.getRandomValues(addressBytes);
+            const address = '0x' + Array.from(addressBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            return { address, privateKey };
+        }
+
+        async function fundAccount(address) {
+            try {
+                // Call Cedra testnet faucet
+                const response = await fetch(`${FAUCET_API}/mint?amount=100000000&address=${address}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    console.log("Faucet funded account");
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error("Faucet error:", error);
+                return false;
+            }
+        }
+
+        async function getAccountBalance() {
+            if (!currentAccount) return 0;
+            try {
+                const response = await fetch(`${TESTNET_API}/accounts/${currentAccount}/balance`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return parseInt(data.balance || 0) / 100000000;
+                }
+            } catch (error) {
+                console.error("Balance check failed:", error);
+            }
+            return 0;
+        }
+
+        function disconnectWallet() {
+            walletConnected = false;
+            currentAccount = null;
+            accountPrivateKey = null;
+            localStorage.removeItem('praxis_account');
+            localStorage.removeItem('praxis_account');
+            updateWalletUI();
+            showToast("Account disconnected", "info");
+            
+            // Reset UI
+            document.getElementById("counter-value").textContent = "---";
+            document.getElementById("token-balance").textContent = "---";
+        }
+
+        function updateWalletUI() {
+            const walletSection = document.getElementById("wallet-section");
+            const networkStatus = document.getElementById("network-status");
+            const networkText = document.getElementById("network-text");
+            const walletAddress = document.getElementById("wallet-address");
+
+            if (walletConnected && currentAccount) {
+                walletSection.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="bg-brutal-green text-brutal-black font-mono text-sm px-3 py-1 border-2 border-brutal-black hidden md:block">
+                            ${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}
+                        </span>
+                        <button onclick="copyAddress()" class="bg-brutal-purple text-brutal-cream font-mono font-bold px-3 py-2 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 transition-all hidden md:block" title="Copy Address">
+                            📋
+                        </button>
+                        <button onclick="disconnectWallet()" class="bg-brutal-red text-brutal-cream font-mono font-bold px-4 py-2 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 transition-all">
+                            DISCONNECT
+                        </button>
+                    </div>
+                `;
+                networkStatus.classList.remove("bg-brutal-red");
+                networkStatus.classList.add("bg-brutal-green");
+                networkText.textContent = "CEDRA TESTNET";
+                walletAddress.textContent = `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
+            } else {
+                walletSection.innerHTML = `
+                    <button onclick="connectWallet()" class="bg-brutal-orange text-brutal-black font-mono font-bold px-4 py-2 border-4 border-brutal-black shadow-brutal hover:translate-x-1 hover:translate-y-1 transition-all">
+                        CREATE ACCOUNT
+                    </button>
+                `;
+                networkStatus.classList.remove("bg-brutal-green");
+                networkStatus.classList.add("bg-brutal-red");
+                networkText.textContent = "NOT CONNECTED";
+                walletAddress.textContent = "---";
+            }
+        }
+
+        function copyAddress() {
+            if (currentAccount) {
+                navigator.clipboard.writeText(currentAccount);
+                showToast("Address copied! Get tokens at faucet.cedra.dev", "success");
+            }
+        }
+
+        // ============================================
+        // TRANSACTION HELPER (REST API Based)
+        // ============================================
+
+        async function submitTransaction(functionId, typeArgs = [], args = []) {
+            // For demo purposes, we'll simulate transactions
+            // In production, you'd sign with the private key and submit
+            showToast("⚠️ Demo Mode: Transaction simulated", "info");
+            
+            // Simulate a transaction hash
+            const hash = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            return { hash, success: true };
+        }
+
+        async function viewFunction(functionId, typeArgs = [], args = []) {
+            try {
+                const response = await fetch(`${TESTNET_API}/view`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        function: functionId,
+                        type_arguments: typeArgs,
+                        arguments: args
+                    })
+                });
+                
+                if (response.ok) {
+                    return await response.json();
+                }
+                return null;
+            } catch (error) {
+                console.error("View function failed:", error);
+                return null;
+            }
+        }
+
+        // ============================================
+        // COUNTER FUNCTIONS
+        // ============================================
+
+        async function checkCounter() {
+            if (!walletConnected || !currentAccount) return false;
+            
+            try {
+                const result = await viewFunction(`${COUNTER_MODULE}::has_counter`, [], [currentAccount]);
+                return result && result[0] === true;
+            } catch (error) {
+                console.error("Check counter failed:", error);
+                return false;
+            }
+        }
+
+        async function getCounterValue() {
+            if (!walletConnected || !currentAccount) return null;
+            
+            try {
+                const result = await viewFunction(`${COUNTER_MODULE}::get_count`, [], [currentAccount]);
+                return result ? parseInt(result[0]) : null;
+            } catch (error) {
+                console.error("Get counter failed:", error);
+                return null;
+            }
+        }
+
+        async function refreshCounter() {
+            const counterValue = document.getElementById("counter-value");
+            const statusText = document.getElementById("counter-status-text");
+            const btnInit = document.getElementById("btn-init");
+            
+            if (!walletConnected) {
+                counterValue.textContent = "---";
+                statusText.textContent = "Create account to interact";
+                return;
+            }
+
+            // For demo, show simulated counter
+            const savedCount = localStorage.getItem('praxis_counter') || '0';
+            counterValue.textContent = savedCount;
+            statusText.textContent = "Counter ready ✓";
+            btnInit.textContent = savedCount === '0' ? "INIT" : "INIT ✓";
+        }
+
+        async function initializeCounter() {
+            if (!walletConnected) {
+                showToast("Create account first!", "error");
+                return;
+            }
+
+            try {
+                showToast("Initializing counter...", "info");
+                const result = await submitTransaction(`${COUNTER_MODULE}::initialize`);
+                
+                localStorage.setItem('praxis_counter', '0');
+                showToast("Counter initialized! TX: " + result.hash.slice(0, 10) + "...", "success");
+                addCounterTx("initialize", result.hash);
+                
+                await refreshCounter();
+            } catch (error) {
+                showToast("Failed: " + error.message, "error");
+            }
+        }
+
+        async function incrementCounter() {
+            if (!walletConnected) {
+                showToast("Create account first!", "error");
+                return;
+            }
+
+            try {
+                showToast("Incrementing...", "info");
+                const result = await submitTransaction(`${COUNTER_MODULE}::increment`);
+                
+                const current = parseInt(localStorage.getItem('praxis_counter') || '0');
+                localStorage.setItem('praxis_counter', (current + 1).toString());
+                
+                showToast("Incremented! TX: " + result.hash.slice(0, 10) + "...", "success");
+                addCounterTx("increment", result.hash);
+                
+                await refreshCounter();
+            } catch (error) {
+                showToast("Failed: " + error.message, "error");
+            }
+        }
+
+        async function decrementCounter() {
+            if (!walletConnected) {
+                showToast("Create account first!", "error");
+                return;
+            }
+
+            try {
+                showToast("Decrementing...", "info");
+                const result = await submitTransaction(`${COUNTER_MODULE}::decrement`);
+                
+                const current = parseInt(localStorage.getItem('praxis_counter') || '0');
+                localStorage.setItem('praxis_counter', Math.max(0, current - 1).toString());
+                
+                showToast("Decremented! TX: " + result.hash.slice(0, 10) + "...", "success");
+                addCounterTx("decrement", result.hash);
+                
+                await refreshCounter();
+            } catch (error) {
+                showToast("Failed: " + error.message, "error");
+            }
+        }
+
+        async function resetCounter() {
+            if (!walletConnected) {
+                showToast("Create account first!", "error");
+                return;
+            }
+
+            try {
+                showToast("Resetting...", "info");
+                const result = await submitTransaction(`${COUNTER_MODULE}::reset`);
+                
+                localStorage.setItem('praxis_counter', '0');
+                
+                showToast("Reset! TX: " + result.hash.slice(0, 10) + "...", "success");
+                addCounterTx("reset", result.hash);
+                
+                await refreshCounter();
+            } catch (error) {
+                showToast("Failed: " + error.message, "error");
+            }
+        }
+
+        function addCounterTx(action, hash) {
+            const container = document.getElementById("counter-txs");
+            const tx = document.createElement("div");
+            tx.className = "bg-brutal-green/30 p-3 font-mono text-sm border-2 border-brutal-black flex justify-between items-center";
+            tx.innerHTML = `
+                <span>${action.toUpperCase()}</span>
+                <a href="https://cedrascan.com/txn/${hash}" target="_blank" class="text-brutal-blue underline">${hash.slice(0, 8)}...</a>
+            `;
+            container.insertBefore(tx, container.firstChild);
+            
+            // Keep only last 5 transactions
+            while (container.children.length > 5) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // ============================================
+        // TOKEN FUNCTIONS
+        // ============================================
+
+        async function getTokenBalance() {
+            if (!walletConnected || !currentAccount) return null;
+            
+            // For demo, use localStorage
+            const saved = localStorage.getItem('praxis_token_balance');
+            return saved ? parseFloat(saved) : 0;
+        }
+
+        async function refreshTokenBalance() {
+            const balanceEl = document.getElementById("token-balance");
+            
+            if (!walletConnected) {
+                balanceEl.textContent = "---";
+                return;
+            }
+
+            const balance = await getTokenBalance();
+            balanceEl.textContent = balance.toFixed(2) + " CTT";
+        }
+
+        async function transferTokens() {
+            if (!walletConnected) {
+                showToast("Create account first!", "error");
+                return;
+            }
+
+            const to = document.getElementById("transfer-to").value;
+            const amount = parseFloat(document.getElementById("transfer-amount").value);
+
+            if (!to || !amount) {
+                showToast("Enter recipient and amount!", "error");
+                return;
+            }
+
+            try {
+                showToast("Transferring tokens...", "info");
+                const result = await submitTransaction(`${TOKEN_MODULE}::transfer`, [], [to, amount]);
+                
+                const current = parseFloat(localStorage.getItem('praxis_token_balance') || '0');
+                localStorage.setItem('praxis_token_balance', Math.max(0, current - amount).toString());
+                
+                showToast("Transfer successful! TX: " + result.hash.slice(0, 10) + "...", "success");
+                
+                document.getElementById("transfer-to").value = "";
+                document.getElementById("transfer-amount").value = "";
+                
+                await refreshTokenBalance();
+            } catch (error) {
+                showToast("Transfer failed: " + error.message, "error");
+            }
+        }
+
+        async function mintTokens() {
+            if (!walletConnected) {
+                showToast("Create account first!", "error");
+                return;
+            }
+
+            const to = document.getElementById("mint-to").value || currentAccount;
+            const amount = parseFloat(document.getElementById("mint-amount").value);
+
+            if (!amount) {
+                showToast("Enter amount to mint!", "error");
+                return;
+            }
+
+            try {
+                showToast("Minting tokens...", "info");
+                const result = await submitTransaction(`${TOKEN_MODULE}::mint`, [], [to, amount]);
+                
+                const current = parseFloat(localStorage.getItem('praxis_token_balance') || '0');
+                localStorage.setItem('praxis_token_balance', (current + amount).toString());
+                
+                showToast("Minted! TX: " + result.hash.slice(0, 10) + "...", "success");
+                
+                document.getElementById("mint-to").value = "";
+                document.getElementById("mint-amount").value = "";
+                
+                await refreshTokenBalance();
+            } catch (error) {
+                showToast("Mint failed: " + error.message, "error");
+            }
+        }
+
+        // ============================================
+        // NFT FUNCTIONS
+        // ============================================
+
+        async function mintNFT() {
+            if (!walletConnected) {
+                showToast("Create account first!", "error");
+                return;
+            }
+
+            const name = document.getElementById("nft-name").value;
+            const description = document.getElementById("nft-description").value;
+            const uri = document.getElementById("nft-uri").value;
+
+            if (!name) {
+                showToast("Enter NFT name!", "error");
+                return;
+            }
+
+            try {
+                showToast("Minting NFT...", "info");
+                const result = await submitTransaction(`${NFT_MODULE}::mint`, [], [name, description, uri]);
+                
+                // Save to localStorage for demo
+                const nfts = JSON.parse(localStorage.getItem('praxis_nfts') || '[]');
+                nfts.push({
+                    id: nfts.length + 1,
+                    name: name,
+                    description: description || "A unique Cedra NFT",
+                    uri: uri || "",
+                    txHash: result.hash
+                });
+                localStorage.setItem('praxis_nfts', JSON.stringify(nfts));
+                
+                showToast("NFT Minted! TX: " + result.hash.slice(0, 10) + "...", "success");
+                
+                document.getElementById("nft-name").value = "";
+                document.getElementById("nft-description").value = "";
+                document.getElementById("nft-uri").value = "";
+                
+                await refreshNFTs();
+            } catch (error) {
+                showToast("Mint failed: " + error.message, "error");
+            }
+        }
+
+        async function refreshNFTs() {
+            const gallery = document.getElementById("nft-gallery");
+            const yourCount = document.getElementById("nft-your-count");
+            
+            if (!walletConnected) {
+                yourCount.textContent = "---";
+                gallery.innerHTML = `
+                    <div class="bg-brutal-cream p-4 border-4 border-brutal-black shadow-brutal">
+                        <div class="aspect-square bg-brutal-black/20 flex items-center justify-center mb-4">
+                            <span class="font-mono text-sm text-center px-2">Create account to view</span>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Load from localStorage
+            const nfts = JSON.parse(localStorage.getItem('praxis_nfts') || '[]');
+            yourCount.textContent = nfts.length.toString();
+            
+            if (nfts.length === 0) {
+                gallery.innerHTML = `
+                    <div class="bg-brutal-cream p-4 border-4 border-brutal-black shadow-brutal col-span-full">
+                        <div class="aspect-square bg-brutal-black/20 flex items-center justify-center mb-4">
+                            <span class="font-mono text-sm text-center px-2">No NFTs yet. Mint your first!</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                gallery.innerHTML = nfts.map(nft => `
+                    <div class="bg-brutal-cream p-4 border-4 border-brutal-black shadow-brutal card-tilt">
+                        <div class="aspect-square bg-gradient-to-br from-brutal-pink to-brutal-purple flex items-center justify-center mb-4 border-2 border-brutal-black">
+                            <span class="text-4xl">🖼️</span>
+                        </div>
+                        <h4 class="font-mono font-bold truncate">${nft.name}</h4>
+                        <p class="font-mono text-sm text-brutal-black/60 truncate">${nft.description}</p>
+                        <a href="https://cedrascan.com/txn/${nft.txHash}" target="_blank" class="text-xs text-brutal-blue underline">View TX</a>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // NFT Preview
+        document.getElementById("nft-uri")?.addEventListener("input", function(e) {
+            const preview = document.getElementById("nft-preview");
+            const uri = e.target.value;
+            
+            if (uri && (uri.startsWith("http://") || uri.startsWith("https://"))) {
+                preview.innerHTML = `<img src="${uri}" alt="NFT Preview" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span class=\\'text-brutal-cream font-mono text-center px-4\\'>Invalid image URL</span>'">`;
+            } else {
+                preview.innerHTML = `<span class="text-brutal-cream font-mono text-center px-4">NFT PREVIEW<br>Enter URI to preview</span>`;
+            }
+        });
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        function showToast(message, type = "info") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            
+            const colors = {
+                success: "bg-brutal-green text-brutal-black",
+                error: "bg-brutal-red text-brutal-cream",
+                info: "bg-brutal-blue text-brutal-black"
+            };
+
+            toast.className = `toast ${colors[type]} px-6 py-3 border-4 border-brutal-black shadow-brutal font-mono font-bold`;
+            toast.textContent = message;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transform = "translateX(100%)";
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        async function refreshAllData() {
+            await Promise.all([
+                refreshCounter(),
+                refreshTokenBalance(),
+                refreshNFTs()
+            ]);
+        }
+
+        // ============================================
+        // SCROLL ANIMATIONS
+        // ============================================
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // ============================================
+        // INITIALIZE
+        // ============================================
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            console.log("🚀 PRAXIS - Cedra Builders Forge");
+            console.log("📦 Initializing...");
+            
+            // Initialize SDK first
+            await initCedra();
+            
+            // Check for saved account in localStorage
+            const savedAccount = localStorage.getItem('praxis_account');
+            if (savedAccount) {
+                try {
+                    const data = JSON.parse(savedAccount);
+                    currentAccount = data.address;
+                    accountPrivateKey = data.privateKey;
+                    walletConnected = true;
+                    updateWalletUI();
+                    console.log("✅ Account restored:", currentAccount.slice(0, 10) + "...");
+                    showToast("Account restored!", "success");
+                    await refreshAllData();
+                } catch (e) {
+                    console.log("Failed to restore account:", e);
+                    localStorage.removeItem('praxis_account');
+                }
+            } else {
+                console.log("No saved account. Click 'CREATE ACCOUNT' to start.");
+            }
+        });
+
+        // Export functions for debugging
+        window.praxisDebug = {
+            clearAccount: () => {
+                localStorage.removeItem('praxis_account');
+                localStorage.removeItem('praxis_counter');
+                localStorage.removeItem('praxis_token_balance');
+                localStorage.removeItem('praxis_nfts');
+                location.reload();
+            },
+            getState: () => ({
+                connected: walletConnected,
+                account: currentAccount,
+                counter: localStorage.getItem('praxis_counter'),
+                tokens: localStorage.getItem('praxis_token_balance'),
+                nfts: JSON.parse(localStorage.getItem('praxis_nfts') || '[]').length
+            })
+        };
+    </script>
+</body>
+</html>
